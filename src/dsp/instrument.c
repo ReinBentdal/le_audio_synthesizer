@@ -45,7 +45,7 @@ bool instrument_process(struct instrument* instrument, int8_t* block, size_t blo
     bool did_process = false;
 
     for (int i = 0; i < CONFIG_MAX_NOTES; i++) {
-        if (osc_process_sine(&instrument->osciillators[i], block, block_size)) {
+        if (osc_process_triangle(&instrument->osciillators[i], block, block_size)) {
             effect_modulation_process(&instrument->modulation[i], block, block_size);
             did_process = true;
         }
