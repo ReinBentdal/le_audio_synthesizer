@@ -42,6 +42,8 @@ void ble_discovered_init(void) {
 }
 
 void ble_discovered_add(const bt_addr_le_t* addr, const uint8_t *data, uint8_t data_len, const int8_t rssi) {
+    __ASSERT_NO_MSG(addr != NULL);
+    __ASSERT_NO_MSG(data != NULL);
 
     k_mutex_lock(&_mutex, K_FOREVER);
 
@@ -77,7 +79,7 @@ void ble_discovered_add(const bt_addr_le_t* addr, const uint8_t *data, uint8_t d
     };
     strncpy(destination->name, (char*)data, data_len > BT_NAME_MAX_SIZE ? BT_NAME_MAX_SIZE : data_len);
 
-    /* discovered devices sorted after strength */
+    /* discovered devices sorted by strength */
     struct bt_device* tmp = _bt_device_discovered;
     struct bt_device* prev = NULL;
     while (tmp != NULL && tmp->rssi > destination->rssi) {
@@ -98,6 +100,7 @@ void ble_discovered_print(void) {
     int count = 0;
     while (tmp != NULL) {
         /* short sleep to prevent dropped messages in debug terminal */
+        // not ideal because it locks the mutex, forcing the thread which inserts new devices to wait for a substantial amount of time
         k_sleep(K_MSEC(15));
 
         char addr_str[BT_ADDR_LE_STR_LEN];

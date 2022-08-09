@@ -22,9 +22,9 @@ static bool audio_codec_started;
 
 static void _encoder_work_submit(struct k_timer * _unused);
 static void _encoder(struct k_work * __unused);
-static inline void _key_play(int index, int note);
-static inline void _key_stop(int index);
-static void _discovered_devices_print(void* _a, void* _b, void* _c);
+static inline void _key_play_cb(int index, int note);
+static inline void _key_stop_cb(int index);
+static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c);
 
 struct k_timer _encoder_timer;
 K_TIMER_DEFINE(_encoder_timer, _encoder_work_submit, NULL);
@@ -44,8 +44,10 @@ K_THREAD_STACK_DEFINE(_print_stack_area, PRINT_STACK_SIZE);
 struct k_thread _print_thread_data;
 
 void audio_codec_init(void) {
-	keys_init(&keys, _key_play, _key_stop);
+	
+	keys_init(&keys, _key_play_cb, _key_stop_cb);
 	instrument_init(&instrument);
+
 	k_work_queue_init(&_encoder_work_queue);
 	k_work_queue_start(&_encoder_work_queue, _encoder_stack_area,
                    K_THREAD_STACK_SIZEOF(_encoder_stack_area), K_PRIO_PREEMPT(CONFIG_ENCODER_THREAD_PRIO),
@@ -53,7 +55,7 @@ void audio_codec_init(void) {
 
 	(void)k_thread_create(&_print_thread_data, _print_stack_area,
                                  K_THREAD_STACK_SIZEOF(_print_stack_area),
-                                 _discovered_devices_print,
+                                 _button_msgq_reciever_thread,
                                  NULL, NULL, NULL,
                                  PRINT_PRIORITY, 0, K_NO_WAIT);
 }
@@ -148,23 +150,25 @@ static void _encoder(struct k_work * _unused) {
 	}
 }
 
-static inline void _key_play(int index, int note) {
+static inline void _key_play_cb(int index, int note) {
 	instrument_play_note(&instrument, index, note);
 }
 
-static inline void _key_stop(int index) {
+static inline void _key_stop_cb(int index) {
 	instrument_stop_note(&instrument, index);
 }
 
-static void _discovered_devices_print(void* _a, void* _b, void* _c) {
+static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c) {
 	(void)_a;
 	(void)_b;
 	(void)_c;
-	#define OFFSET 40
-	static uint8_t key_map[] = {OFFSET+12, OFFSET+14, OFFSET+18, OFFSET+19, OFFSET+21};
+	#define NOTE_OFFSET 40
+	static uint8_t key_map[] = {NOTE_OFFSET+12, NOTE_OFFSET+14, NOTE_OFFSET+18, NOTE_OFFSET+19, NOTE_OFFSET+21};
 	while (1) {
 		struct button_event event;
 		button_event_get(&event, K_FOREVER);
+
+		__ASSERT(event.index >= 0 && event.index < ARRAY_SIZE(key_map), "button index out of range");
 
 		switch (event.state)
 		{
@@ -175,9 +179,5 @@ static void _discovered_devices_print(void* _a, void* _b, void* _c) {
 			keys_stop(&keys, key_map[event.index]);
 			break;
 		}
-
-		// tmp_set_freq((button_pin + 1)*100);
-	// 	// ble_discovered_print();
-		// (void)k_sleep(K_MSEC(10000));
 	}
 }

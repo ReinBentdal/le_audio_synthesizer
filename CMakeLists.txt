@@ -11,8 +11,6 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 # Set the nRF5340 Audio version. x.x.99 indicates master branch/cutting edge
 project(NRF5340_AUDIO VERSION 0.5.99)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/verification/verify.cmake)
-
 string(TIMESTAMP NRF5340_AUDIO_CORE_APP_COMP_DATE "%a %b %d %H:%M:%S %Y")
 
 # Target sources below are specific to the nRF5340 Audio DK HW

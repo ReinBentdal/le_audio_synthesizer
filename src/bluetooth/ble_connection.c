@@ -50,7 +50,7 @@ int bluetooth_init(bluetooth_ready_t on_bt_ready) {
 	k_work_init(&_net_core_ctrl_version_get_work, _work_net_core_ctrl_version_get);
 	k_timer_start(&_net_core_watchdog_timer, K_NO_WAIT, K_MSEC(NET_CORE_WATCHDOG_TIME_MS));
 
-    return 0;
+	return 0;
 
 }
 

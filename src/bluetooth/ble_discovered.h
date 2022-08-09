@@ -25,8 +25,7 @@ void ble_discovered_init(void);
 void ble_discovered_add(const bt_addr_le_t* addr, const uint8_t *data, uint8_t data_len, const int8_t rssi);
 
 /**
- * @brief prints all discovered elements to the terminal
- * 
+ * @brief prints discovered devices, sorted by strength
  */
 void ble_discovered_print(void);
 
