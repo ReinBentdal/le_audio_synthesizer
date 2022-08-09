@@ -92,7 +92,7 @@ void ble_discovered_add(const bt_addr_le_t* addr, const uint8_t *data, uint8_t d
     k_mutex_unlock(&_mutex);
 }
 
-void ble_discovered_print(void) {
+void ble_discovered_log(void) {
     k_mutex_lock(&_mutex, K_FOREVER);
     LOG_INF("");
     LOG_INF("--Discovered devices--");

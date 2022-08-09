@@ -27,6 +27,6 @@ void ble_discovered_add(const bt_addr_le_t* addr, const uint8_t *data, uint8_t d
 /**
  * @brief prints discovered devices, sorted by strength
  */
-void ble_discovered_print(void);
+void ble_discovered_log(void);
 
 #endif

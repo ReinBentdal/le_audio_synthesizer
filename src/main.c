@@ -112,7 +112,7 @@ static void _log_discovered_devices(void* arg1, void* arg2, void* arg3)
   (void)arg3;
 
   while (1) {
-    ble_discovered_print();
+    ble_discovered_log();
     k_sleep(K_SECONDS(10));
   }
 }
