@@ -108,23 +108,23 @@ int button_event_get(struct button_event* event, k_timeout_t timeout) {
 static void _button_event_interrupt(const struct device *port, uint8_t button_index) {
     __ASSERT(button_index >= 0 && button_index < ARRAY_SIZE(_button_config), "button index out of range");
 
-    /* read early to minimize the chance of a state change */
-    const int button_state = gpio_pin_get(port, _button_config[button_index].pin);
-    if (button_state < 0) {
-        LOG_WRN("Failed to read button state, error %d", button_state);
-        return;
-    }
-
     if (_button_config[button_index].debounce_ongoing) {
         return;
     }
+
+
 
     if (k_msgq_num_free_get(&_button_msg_queue) == 0) {
         LOG_WRN("Button queue is full, unable to register button event");
         return;
     }
 
-    LOG_INF("button %d, state %d", button_index, button_state);
+    // TODO: this is sub optimal and clearly results in wrong button readings in some cases, such as an unstable button state  (oscillating)
+    const int button_state = gpio_pin_get(port, _button_config[button_index].pin);
+    if (button_state < 0) {
+        LOG_WRN("Failed to read button state, error %d", button_state);
+        return;
+    }
 
     struct button_event button_event = {
         .index = button_index,
