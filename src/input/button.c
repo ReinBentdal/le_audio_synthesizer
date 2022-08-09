@@ -112,8 +112,6 @@ static void _button_event_interrupt(const struct device *port, uint8_t button_in
         return;
     }
 
-
-
     if (k_msgq_num_free_get(&_button_msg_queue) == 0) {
         LOG_WRN("Button queue is full, unable to register button event");
         return;
