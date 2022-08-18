@@ -1,3 +1,14 @@
+/**
+ * @file button.h
+ * @author Rein Gundersen Bentdal (rein.bent@gmail.com)
+ * @brief handles button/key input read with debounce. Preemtly assumes button state as toggled on 
+ *  interrupt with actual state verified after debounce time. This reduces the latency by the debounce time but may
+ *  sometimes result in the preemtive value being wrong.
+ * @date 2022-08-18
+ * 
+ * @copyright Copyright (c) 2022
+ */
+
 #ifndef _BUTTON_H_
 #define _BUTTON_H_
 
@@ -14,7 +25,7 @@ struct button_event {
 int button_init(void);
 
 /**
- * @brief Should be called on a regular basis to prevent full buffer
+ * @brief Should be called on a regular basis to prevent buffer overflow
  * 
  * @return error code 
  */

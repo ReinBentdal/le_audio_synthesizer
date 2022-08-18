@@ -18,6 +18,12 @@
 		return ret;	\
 	}
 
+#define RETURN_ON_ERR_MSG(ret, msg) \
+	if (ret != 0) { \
+		LOG_ERR("%s", msg); \
+		return ret;	\
+	}
+
 #define PRINT_AND_OOPS(code)                                                                       \
 	do {                                                                                       \
 		LOG_ERR("ERR_CHK Err_code: [%d] @ line: %d\t", code, __LINE__);                    \
@@ -73,5 +79,19 @@
 
 #define BIT_SET(REG, BIT) ((REG) |= (BIT))
 #define BIT_CLEAR(REG, BIT) ((REG) &= ~(BIT))
+
+#define LIST_EACH(item, list) \
+    for(T * item = list->head; item != NULL; item = item->next)
+
+#define ARRAY_EACH(item, array) \
+    for(int keep = 1, \
+            count = 0,\
+            size = sizeof (array) / sizeof *(array); \
+        keep && count != size; \
+        keep = !keep, count++) \
+      for(item = (array) + count; keep; keep = !keep)
+
+#define EACH(item, array, length) \
+(typeof(*(array)) *p = (array), (item) = *p; p < &((array)[length]); p++, (item) = *p)
 
 #endif /* _MACROS_H_ */

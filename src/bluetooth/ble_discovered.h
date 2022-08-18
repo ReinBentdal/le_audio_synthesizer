@@ -1,7 +1,7 @@
 /**
  * @file ble_discovered.h
  * @author Nordic Semiconductor ASA (Rein Gundersen Bentdal)
- * @brief 
+ * @brief Stores all discovered devices in a list
  * @version 0.1
  * @date 2022-08-01
  * 
