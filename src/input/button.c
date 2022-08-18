@@ -80,7 +80,6 @@ static const struct device* _gpio_nrf5340_audio_dk = DEVICE_DT_GET(DT_NODELABEL(
 
 int button_init(void)
 {
-
   __ASSERT_NO_MSG(_gpio_nrf5340_audio_dk != NULL);
 
   for (int i = 0; i < ARRAY_SIZE(_button_config); i++) {
@@ -97,16 +96,19 @@ int button_init(void)
     ret = gpio_pin_interrupt_configure(_gpio_nrf5340_audio_dk, _button_config[i].pin, GPIO_INT_EDGE_BOTH);
     RETURN_ON_ERR(ret);
 
-    int button_state = gpio_pin_get(_gpio_nrf5340_audio_dk, _button_config[i].pin);
-    if (button_state < 0) {
-      LOG_WRN("Unable to read button state");
-      button_state = 0;
+    int button_ret = gpio_pin_get(_gpio_nrf5340_audio_dk, _button_config[i].pin);
+    if (button_ret < 0) {
+      LOG_WRN("Unable to read button state, defaults to BUTTON_RELEASED");
+      button_ret = (int)BUTTON_RELEASED;
     }
-    _button_config[i].state = (enum button_state)button_state;
+
+    _button_config[i].state = (enum button_state)button_ret;
+    _button_config[i].debounce_ongoing = false;
 
     k_timer_init(&_button_config[i].timer, _button_config[i].debounce_cb, NULL);
   }
-  return 0;
+
+	return 0;
 }
 
 int button_event_get(struct button_event* event, k_timeout_t timeout)
@@ -127,7 +129,10 @@ static void _button_event_interrupt(const struct device* port, uint8_t button_in
   /* toggle button state, verify correct state after debounce */
   enum button_state button_toggle_state = (enum button_state)(!(int)(_button_config[button_index].state));
   int ret = _button_state_notify(button_index, button_toggle_state);
-  RETURN_ON_ERR_MSG(ret, "failed to update button state");
+	if (ret != 0) {
+		LOG_WRN("failed to update button state");
+		return;
+	}
 
   _button_config[button_index].debounce_ongoing = true;
   _button_config[button_index].state = button_toggle_state;
@@ -145,6 +150,8 @@ static void _button_debounce_cb(int index)
     LOG_WRN("Unable to read button pin value");
     return;
   }
+	
+  _button_config[index].debounce_ongoing = false;
 
   enum button_state button_state = (enum button_state)button_ret;
 
@@ -152,11 +159,13 @@ static void _button_debounce_cb(int index)
     LOG_WRN("Registered different button state after debounce");
 
     int ret = _button_state_notify(index, button_state);
-    RETURN_ON_ERR_MSG(ret, "failed to update button state after debounce");
+		if (ret != 0) {
+			LOG_WRN("failed to update button state after debounce");
+			return;
+		}
 
     _button_config[index].state = button_state;
   }
-  _button_config[index].debounce_ongoing = false;
 }
 
 static int _button_state_notify(uint8_t index, enum button_state state)
@@ -173,4 +182,6 @@ static int _button_state_notify(uint8_t index, enum button_state state)
 
   int ret = k_msgq_put(&_button_msg_queue, &button_event, K_NO_WAIT);
   RETURN_ON_ERR(ret);
+
+	return 0;
 }
