@@ -16,6 +16,7 @@
 #include "macros_common.h"
 #include "nrfx_clock.h"
 #include "stream_control.h"
+#include "dsp_instructions.h"
 #ifdef CONFIG_CPU_LOAD
 #include <debug/cpu_load.h>
 #endif
@@ -112,7 +113,7 @@ static void _log_discovered_devices(void* arg1, void* arg2, void* arg3)
   (void)arg3;
 
   while (1) {
-    ble_discovered_log();
+    // ble_discovered_log();
     k_sleep(K_SECONDS(10));
   }
 }

@@ -7,6 +7,7 @@
 #include "instrument.h"
 #include "key_assign.h"
 #include "button.h"
+#include "effect_envelope.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(audio_codec, CONFIG_LOG_AUDIO_CODEC_LEVEL);
@@ -34,30 +35,30 @@ struct k_work_q _encoder_work_queue;
 
 K_WORK_DEFINE(_encoder_work, _encoder);
 
-struct instrument instrument;
-struct keys keys;
+struct instrument _instrument;
+struct keys _keys;
 
-#define PRINT_STACK_SIZE 700
-#define PRINT_PRIORITY 5
+#define BUTTON_MSGQ_RX_STACK_SIZE 700
+#define BUTTON_MSGQ_RX_PRIORITY 5
 
-K_THREAD_STACK_DEFINE(_print_stack_area, PRINT_STACK_SIZE);
-struct k_thread _print_thread_data;
+K_THREAD_STACK_DEFINE(_button_msgq_rx_stack_area, BUTTON_MSGQ_RX_STACK_SIZE);
+struct k_thread _button_msgq_rx_thread_data;
 
 void audio_codec_init(void) {
 	
-	keys_init(&keys, _key_play_cb, _key_stop_cb);
-	instrument_init(&instrument);
+	keys_init(&_keys, _key_play_cb, _key_stop_cb);
+	instrument_init(&_instrument);
 
 	k_work_queue_init(&_encoder_work_queue);
 	k_work_queue_start(&_encoder_work_queue, _encoder_stack_area,
                    K_THREAD_STACK_SIZEOF(_encoder_stack_area), K_PRIO_PREEMPT(CONFIG_ENCODER_THREAD_PRIO),
                    NULL);
 
-	(void)k_thread_create(&_print_thread_data, _print_stack_area,
-                                 K_THREAD_STACK_SIZEOF(_print_stack_area),
+	(void)k_thread_create(&_button_msgq_rx_thread_data, _button_msgq_rx_stack_area,
+                                 K_THREAD_STACK_SIZEOF(_button_msgq_rx_stack_area),
                                  _button_msgq_reciever_thread,
                                  NULL, NULL, NULL,
-                                 PRINT_PRIORITY, 0, K_NO_WAIT);
+                                 BUTTON_MSGQ_RX_PRIORITY, 0, K_NO_WAIT);
 }
 
 void audio_codec_gateway_start(void) {
@@ -132,10 +133,11 @@ static void _encoder_work_submit(struct k_timer * _unused) {
 static void _encoder(struct k_work * _unused) {
 	// TODO: stop thread when not in use -> cooperative thread
 	if (sw_codec_cfg.encoder.enabled) {
-		char pcm_raw_data[FRAME_SIZE_BYTES] = {0};
+		char pcm_raw_data[FRAME_SIZE_BYTES];
+		memset(pcm_raw_data, 0, FRAME_SIZE_BYTES * sizeof pcm_raw_data[0]);
 
 		/* audio proccessing here */
-		(void)instrument_process(&instrument, pcm_raw_data, FRAME_SIZE_BYTES / CONFIG_AUDIO_BIT_DEPTH_OCTETS);
+		(void)instrument_process(&_instrument, pcm_raw_data, FRAME_SIZE_BYTES / CONFIG_AUDIO_BIT_DEPTH_OCTETS);
 
 		int ret;
 		size_t encoded_data_size = 0;
@@ -151,11 +153,11 @@ static void _encoder(struct k_work * _unused) {
 }
 
 static inline void _key_play_cb(int index, int note) {
-	instrument_play_note(&instrument, index, note);
+	instrument_play_note(&_instrument, index, note);
 }
 
 static inline void _key_stop_cb(int index) {
-	instrument_stop_note(&instrument, index);
+	instrument_stop_note(&_instrument, index);
 }
 
 static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c) {
@@ -163,7 +165,7 @@ static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c) {
 	(void)_b;
 	(void)_c;
 	#define NOTE_OFFSET 40
-	static uint8_t key_map[] = {NOTE_OFFSET+12, NOTE_OFFSET+14, NOTE_OFFSET+18, NOTE_OFFSET+19, NOTE_OFFSET+21};
+	static const uint8_t key_map[] = {NOTE_OFFSET+12, NOTE_OFFSET+14, NOTE_OFFSET+18, NOTE_OFFSET+19, NOTE_OFFSET+21};
 	while (1) {
 		struct button_event event;
 		button_event_get(&event, K_FOREVER);
@@ -173,10 +175,10 @@ static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c) {
 		switch (event.state)
 		{
 		case BUTTON_PRESSED:
-			keys_play(&keys, key_map[event.index]);
+			keys_play(&_keys, key_map[event.index]);
 			break;
 		case BUTTON_RELEASED:
-			keys_stop(&keys, key_map[event.index]);
+			keys_stop(&_keys, key_map[event.index]);
 			break;
 		}
 	}

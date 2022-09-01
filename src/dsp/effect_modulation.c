@@ -5,7 +5,6 @@
 
 #include "waveforms.h"
 
-
 void effect_modulation_init(struct effect_modulation* mod)
 {
 	__ASSERT_NO_MSG(mod != NULL);
@@ -17,6 +16,22 @@ void effect_modulation_init(struct effect_modulation* mod)
 	};
 }
 
+void effect_modulation_set_amplitude(struct effect_modulation *mod, float amplitude)
+{
+	__ASSERT_NO_MSG(mod != NULL);
+	__ASSERT(amplitude >= 0 && amplitude <= 1, "effect modulation amplitude out of range");
+
+	mod->magnitude = UINT16_MAX * amplitude;
+}
+
+void effect_modulation_set_freq(struct effect_modulation *mod, float freq)
+{
+	__ASSERT_NO_MSG(mod != NULL);
+	__ASSERT(freq >= 0 && freq < CONFIG_AUDIO_SAMPLE_RATE_HZ / 2, "effect modulation frequency out of range");
+
+	mod->phase_increment = (freq / CONFIG_AUDIO_SAMPLE_RATE_HZ / 2) * UINT32_MAX;
+}
+
 bool effect_modulation_process(struct effect_modulation *mod, int8_t* block, size_t block_size)
 {
 	BUILD_ASSERT(CONFIG_AUDIO_BIT_DEPTH_OCTETS == 2, "modulation only support 16-bit");
@@ -24,7 +39,7 @@ bool effect_modulation_process(struct effect_modulation *mod, int8_t* block, siz
 	__ASSERT_NO_MSG(mod != NULL);
 
 	if (mod->magnitude == 0) {
-		return false;
+		return true;
 	}
 
 	for (uint32_t i = 0; i < block_size; i++)
@@ -50,20 +65,4 @@ bool effect_modulation_process(struct effect_modulation *mod, int8_t* block, siz
 	}
 
 	return true;
-}
-
-void effect_modulation_set_amplitude(struct effect_modulation *mod, float amplitude)
-{
-	__ASSERT_NO_MSG(mod != NULL);
-	__ASSERT(amplitude >= 0 && amplitude <= 1, "effect modulation amplitude out of range");
-
-	mod->magnitude = UINT16_MAX * amplitude;
-}
-
-void effect_modulation_set_freq(struct effect_modulation *mod, float freq)
-{
-	__ASSERT_NO_MSG(mod != NULL);
-	__ASSERT(freq >= 0 && freq < CONFIG_AUDIO_SAMPLE_RATE_HZ / 2, "effect modulation frequency out of range");
-
-	mod->phase_increment = (freq / CONFIG_AUDIO_SAMPLE_RATE_HZ / 2) * UINT32_MAX;
 }

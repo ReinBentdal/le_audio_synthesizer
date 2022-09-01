@@ -1,4 +1,14 @@
-#pragma once
+/**
+ * @file effect_envelope.h
+ * @author Rein Gundersen Bentdal
+ * @date 2022-09-01
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
+#ifndef _OSCILLATOR_H
+#define _OSCILLATOR_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -27,3 +37,5 @@ bool osc_process_triangle(struct oscillator* osc, int8_t* block, size_t block_si
 /* config */
 void osc_set_amplitude(struct oscillator* osc, float amplitude);
 void osc_set_freq(struct oscillator* osc, float freq);
+
+#endif

@@ -74,22 +74,6 @@ config AUDIO_BIT_DEPTH_OCTETS
 		Bit depth of one sample in storage given in octets.
 		Note that 24 bit depth requires 4 octets for storage
 
-# choice AUDIO_SOURCE_GATEWAY
-# 	prompt "Audio source for gateway"
-# 	default AUDIO_SOURCE_USB
-# 	help
-# 		Select audio source for the gateway
-
-# config AUDIO_SOURCE_USB
-# 	bool "Use USB as audio source"
-# 	help
-# 		Set USB as audio source. Note that this forces the
-# 		stream to be unidirectional because of CPU load
-
-# config AUDIO_SOURCE_I2S
-# 	bool "Use I2S as audio source"
-# endchoice
-
 choice AUDIO_HEADSET_CHANNEL
 	prompt "Headset audio channel assignment"
 	default AUDIO_HEADSET_CHANNEL_RUNTIME
