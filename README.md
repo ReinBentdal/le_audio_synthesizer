@@ -3,7 +3,7 @@ Based on nRF5340 Audio: https://developer.nordicsemi.com/nRF_Connect_SDK/doc/lat
 ## Setup
 Assumes zephyr enviorment is configured and west installed.
 
-Build and flash using vs code nrf connect extension. Add :code:`overlay-debug.conf` and :code:`overlay-central.conf` to your kconfig build configuration.
+Build and flash using vs code nrf connect extension. Add :code:`overlay-debug.conf` and :code:`overlay-central.conf` to your kconfig build configuration.\
 ![Image](./assets/nrf_connect_tab.PNG)
 ![Image](./assets/build_configuration.PNG)
 
