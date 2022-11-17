@@ -52,8 +52,7 @@ void main(void)
 
   LOG_DBG("hf clock start");
   ret = _hfclock_config_and_start();
-  ERR_CHK(ret);
-  LOG_DBG("hf clock start done");
+  ERR_CHK_MSG(ret, "failed to start hf clock");
 
   LOG_DBG("bluetooth start");
   ret = bluetooth_init(_on_bt_ready);
@@ -67,10 +66,11 @@ void main(void)
   audio_codec_init();
 
   LOG_DBG("stream control start");
-  stream_control_start();
-  LOG_DBG("stream control start");
+  ret = stream_control_start();
+  ERR_CHK_MSG(ret, "failed to start stream control");
 
-  button_init();
+  ret = button_init();
+  ERR_CHK_MSG(ret, "failed to initialize buttons");
 
   LOG_DBG("initialization finished");
 
