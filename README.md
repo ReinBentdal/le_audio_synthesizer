@@ -7,7 +7,7 @@ Build and flash using vs code nrf connect extension. Add :code:`overlay-debug.co
 ![Image](./assets/nrf_connect_tab.PNG)
 ![Image](./assets/build_configuration.PNG)
 
-The application uses the LC3 codec (closed source). Make sure to include it through west.
+The application uses the LC3 codec (closed source). Make sure to include it through west:
 
 `west config manifest.group-filter +nrf5340_audio`
 
