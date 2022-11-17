@@ -1,7 +1,7 @@
 /**
  * @file button.h
  * @author Rein Gundersen Bentdal (rein.bent@gmail.com)
- * @brief handles button/key input read with debounce. Preemtly assumes button state as toggled on 
+ * @brief handles button/key input read with debounce. Preemtly assumes button state on 
  *  interrupt with actual state verified after debounce time. This reduces the latency by the debounce time but may
  *  sometimes result in the preemtive value being wrong.
  * @date 2022-08-18

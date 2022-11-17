@@ -19,8 +19,8 @@ struct keys {
     struct key_state keys[CONFIG_MAX_NOTES];
     struct key_state* active_head;
     struct key_state* inactive_head;
-    key_play_cb play_cb;
-    key_stop_cb stop_cb;
+    const key_play_cb play_cb;
+    const key_stop_cb stop_cb;
 
     struct k_mutex mutex;
 };

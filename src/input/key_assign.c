@@ -7,14 +7,16 @@ LOG_MODULE_REGISTER(keys, CONFIG_LOG_BUTTON_LEVEL);
 
 void keys_init(struct keys* keys, key_play_cb play_cb, key_stop_cb stop_cb) {
     __ASSERT(keys != NULL, "NULL pointer parameter");
+    __ASSERT(play_cb != NULL, "play_cb must not be NULL");
+    __ASSERT(stop_cb != NULL, "stop_cb must not be NULL");
 
     k_mutex_init(&keys->mutex);
 
     /* inserts all keys in the unused linked list */
     keys->active_head = NULL;
     keys->inactive_head = NULL;
-    keys->play_cb = play_cb;
-    keys->stop_cb = stop_cb;
+    *(key_play_cb*)&keys->play_cb = play_cb;
+    *(key_stop_cb*)&keys->stop_cb = stop_cb;
 
     for (int i = 0; i < CONFIG_MAX_NOTES; i++) {
         keys->keys[i].index = i;
@@ -33,6 +35,7 @@ void keys_play(struct keys* keys, int note) {
     /* use inactive key which is the longest sinced been in use */
     if (keys->inactive_head != NULL) {
         __ASSERT(keys->inactive_head != NULL, "both inactive and active head cannot be null");
+        
         key = keys->inactive_head;
         struct key_state* prev = NULL;
         while(key->next != NULL) {
@@ -44,7 +47,7 @@ void keys_play(struct keys* keys, int note) {
             prev->next = NULL;
         } else {
             keys->inactive_head = NULL;
-        }
+        } 
     }
 
     /* remove active key which has played the longest */
@@ -77,34 +80,29 @@ void keys_stop(struct keys* keys, int note) {
 
     k_mutex_lock(&keys->mutex, K_FOREVER);
 
-    struct key_state* key = keys->active_head;
-    struct key_state* prev = NULL;
-    while(key != NULL) {
-        if (key->note == note) {
-            break;
-        }
-        prev = key;
-        key = key->next;
+    struct key_state** next_ptr = &keys->active_head;
+
+    /* find the element which points to the element we want to remove */
+    while ((*next_ptr) && (*next_ptr)->note != note) {        
+        next_ptr = &(*next_ptr)->next;
     }
 
-    if (key == NULL) {
+    if ((*next_ptr) == NULL) {
         LOG_WRN("tried stopping note which was not playing: %d", note);
+        k_mutex_unlock(&keys->mutex);
         return;
     }
 
-    if (prev != NULL) {
-        prev->next = key->next;
-    } else {
-        keys->active_head = key->next;
-    }
+    const uint8_t index = (*next_ptr)->index;
 
-    key->next = keys->inactive_head;
-    keys->inactive_head = key;
+    *next_ptr = (*next_ptr)->next;
 
-    __ASSERT(keys->stop_cb != NULL, "cb function is a NULL ptr");
-    keys->stop_cb(key->index);
+    (*next_ptr)->next = keys->inactive_head;
+    keys->inactive_head = *next_ptr;
 
     k_mutex_unlock(&keys->mutex);
+
+    keys->stop_cb(index);
 }
 
 void keys_print(struct keys* keys) {
