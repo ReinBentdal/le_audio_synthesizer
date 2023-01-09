@@ -31,8 +31,10 @@ struct oscillator
 
 /* standard interface */
 void osc_init(struct oscillator* osc);
+
 bool osc_process_sine(struct oscillator* osc, int8_t* block, size_t block_size);
 bool osc_process_triangle(struct oscillator* osc, int8_t* block, size_t block_size);
+bool osc_process_sawtooth(struct oscillator* osc, int8_t* block, size_t block_size);
 
 /* config */
 void osc_set_amplitude(struct oscillator* osc, float amplitude);

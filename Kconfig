@@ -26,7 +26,7 @@ endchoice
 rsource "src/audio/Kconfig"
 rsource "src/bluetooth/Kconfig"
 rsource "src/utils/Kconfig"
-rsource "src/dsp/Kconfig"
+rsource "src/synthesizer/Kconfig"
 rsource "src/input/Kconfig"
 
 #----------------------------------------------------------------------------#

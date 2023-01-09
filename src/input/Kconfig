@@ -10,9 +10,4 @@ config LOG_BUTTON_LEVEL
     int "Log level for button.h"
     default 4
 
-config MAX_NOTES
-    int "Number of notes possible to play at ones"
-    
-    default 3
-
 endmenu # Input

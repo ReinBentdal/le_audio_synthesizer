@@ -8,11 +8,10 @@
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 
-#include "audio_codec.h"
+#include "audio_generate.h"
 #include "ble_connection.h"
 #include "ble_discovered.h"
 #include "button.h"
-#include "key_assign.h"
 #include "macros_common.h"
 #include "nrfx_clock.h"
 #include "stream_control.h"
@@ -63,7 +62,7 @@ void main(void)
   }
   LOG_DBG("bluetooth start done");
 
-  audio_codec_init();
+  audio_generate_init();
 
   LOG_DBG("stream control start");
   ret = stream_control_start();

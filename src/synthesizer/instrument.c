@@ -60,10 +60,14 @@ bool instrument_process(struct instrument *this, int8_t *block, size_t block_siz
     {
         if (effect_envelope_is_active(&this->envelopes[i]))
         {
+
+            /* each oscillators directly modifies osc_block by appending its waveform. Thus a separate stage to combine each oscillator waveform is not necessary */
+
             int8_t osc_block[CONFIG_AUDIO_BIT_DEPTH_OCTETS*block_size];
+
             memset(osc_block, 0, CONFIG_AUDIO_BIT_DEPTH_OCTETS*block_size * sizeof osc_block[0]);
             
-            if (osc_process_sine(&this->osciillators[i], osc_block, block_size))
+            if (osc_process_sawtooth(&this->osciillators[i], osc_block, block_size))
             {
                 // if(effect_modulation_process(&this->modulation[i], block, block_size)) {
                 // TODO: cannot assume effect_envelope_is_active returns the same in this position. Should force DSP to run without interrupts from other threads

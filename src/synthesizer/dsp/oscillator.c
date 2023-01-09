@@ -95,3 +95,24 @@ bool osc_process_triangle(struct oscillator* osc, int8_t* block, size_t block_si
 
 	return true;
 }
+
+bool osc_process_sawtooth(struct oscillator* osc, int8_t* block, size_t block_size) {
+  BUILD_ASSERT(CONFIG_AUDIO_BIT_DEPTH_OCTETS == 2, "oscillator only support 16-bit");
+  __ASSERT_NO_MSG(osc != NULL);
+  __ASSERT_NO_MSG(block != NULL);
+
+  if (osc->magnitude == 0) {
+    return false;
+  }
+
+  for (int i = 0; i < block_size; i++) {
+#if CONFIG_EXPLICIT_DSP_INSTRUCTIONS
+    ((int16_t*)block)[i] += signed_multiply_32x16t(osc->magnitude, osc->phase_accumulate);
+#else
+    ((int16_t*)block)[i] += (osc->magnitute * (osc->phase_accumulate >> 16)) >> 16;
+#endif
+    osc->phase_accumulate += osc->phase_increment;
+  }
+
+  return true;
+}

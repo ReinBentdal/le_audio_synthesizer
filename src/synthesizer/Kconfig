@@ -1,0 +1,8 @@
+
+
+rsource "dsp/Kconfig"
+
+config MAX_NOTES
+    int "Number of notes possible to play at ones"
+    
+    default 3

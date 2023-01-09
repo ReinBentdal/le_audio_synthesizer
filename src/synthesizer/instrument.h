@@ -10,10 +10,11 @@
 #ifndef _AUDIO_INSTRUMENT_H_
 #define _AUDIO_INSTRUMENT_H_
 
-#include "oscillator.h"
-#include "effect_modulation.h"
-#include "effect_envelope.h"
 #include <stdbool.h>
+
+#include "dsp/oscillator.h"
+#include "dsp/effect_modulation.h"
+#include "dsp/effect_envelope.h"
 
 struct instrument {
     struct oscillator osciillators[CONFIG_MAX_NOTES];

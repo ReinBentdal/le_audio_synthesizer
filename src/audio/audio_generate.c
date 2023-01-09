@@ -1,21 +1,19 @@
-#include "audio_codec.h"
+#include "audio_generate.h"
 
 #include <zephyr/kernel.h>
 #include "sw_codec_select.h"
 #include "macros_common.h"
 #include "stream_control.h"
-#include "instrument.h"
-#include "key_assign.h"
 #include "button.h"
-#include "effect_envelope.h"
+#include "synthesizer.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(audio_codec, CONFIG_LOG_AUDIO_CODEC_LEVEL);
 
 #if (CONFIG_AUDIO_FRAME_DURATION_US == 7500)
-#define FRAME_SIZE_BYTES (CONFIG_AUDIO_SAMPLE_RATE_HZ * 15 / 2 / 1000 * CONFIG_AUDIO_BIT_DEPTH_OCTETS * CONFIG_I2S_CH_NUM)
+#define FRAME_SIZE_BYTES (CONFIG_AUDIO_SAMPLE_RATE_HZ * 15 / 2 * CONFIG_AUDIO_BIT_DEPTH_OCTETS * CONFIG_I2S_CH_NUM / 1000)
 #else
-#define FRAME_SIZE_BYTES (CONFIG_AUDIO_SAMPLE_RATE_HZ * 10 / 1000 * CONFIG_AUDIO_BIT_DEPTH_OCTETS * CONFIG_I2S_CH_NUM)
+#define FRAME_SIZE_BYTES (CONFIG_AUDIO_SAMPLE_RATE_HZ * 10 * CONFIG_AUDIO_BIT_DEPTH_OCTETS * CONFIG_I2S_CH_NUM / 1000)
 #endif
 
 static struct sw_codec_config sw_codec_cfg;
@@ -23,8 +21,6 @@ static bool audio_codec_started;
 
 static void _encoder_work_submit(struct k_timer * _unused);
 static void _encoder(struct k_work * __unused);
-static inline void _key_play_cb(int index, int note);
-static inline void _key_stop_cb(int index);
 static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c);
 
 struct k_timer _encoder_timer;
@@ -35,8 +31,6 @@ struct k_work_q _encoder_work_queue;
 
 K_WORK_DEFINE(_encoder_work, _encoder);
 
-struct instrument _instrument;
-struct keys _keys;
 
 #define BUTTON_MSGQ_RX_STACK_SIZE 700
 #define BUTTON_MSGQ_RX_PRIORITY 5
@@ -44,10 +38,9 @@ struct keys _keys;
 K_THREAD_STACK_DEFINE(_button_msgq_rx_stack_area, BUTTON_MSGQ_RX_STACK_SIZE);
 struct k_thread _button_msgq_rx_thread_data;
 
-void audio_codec_init(void) {
+void audio_generate_init(void) {
 	
-	keys_init(&_keys, _key_play_cb, _key_stop_cb);
-	instrument_init(&_instrument);
+	synthesizer_init();
 
 	k_work_queue_init(&_encoder_work_queue);
 	k_work_queue_start(&_encoder_work_queue, _encoder_stack_area,
@@ -61,7 +54,7 @@ void audio_codec_init(void) {
                                  BUTTON_MSGQ_RX_PRIORITY, 0, K_NO_WAIT);
 }
 
-void audio_codec_gateway_start(void) {
+void audio_generate_start(void) {
     int ret;
 
 
@@ -99,7 +92,7 @@ void audio_codec_gateway_start(void) {
 	audio_codec_started = true;    
 }
 
-void audio_codec_stop(void) {
+void audio_generate_stop(void) {
     int ret;
 
     if (!audio_codec_started) {
@@ -137,7 +130,7 @@ static void _encoder(struct k_work * _unused) {
 		memset(pcm_raw_data, 0, FRAME_SIZE_BYTES * sizeof pcm_raw_data[0]);
 
 		/* audio proccessing here */
-		(void)instrument_process(&_instrument, pcm_raw_data, FRAME_SIZE_BYTES / CONFIG_AUDIO_BIT_DEPTH_OCTETS);
+		(void)synthesizer_process(pcm_raw_data, FRAME_SIZE_BYTES / CONFIG_AUDIO_BIT_DEPTH_OCTETS);
 
 		int ret;
 		size_t encoded_data_size = 0;
@@ -152,34 +145,16 @@ static void _encoder(struct k_work * _unused) {
 	}
 }
 
-static inline void _key_play_cb(int index, int note) {
-	instrument_play_note(&_instrument, index, note);
-}
-
-static inline void _key_stop_cb(int index) {
-	instrument_stop_note(&_instrument, index);
-}
 
 static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c) {
 	(void)_a;
 	(void)_b;
 	(void)_c;
-	#define NOTE_OFFSET 40
-	static const uint8_t key_map[] = {NOTE_OFFSET+12, NOTE_OFFSET+14, NOTE_OFFSET+18, NOTE_OFFSET+19, NOTE_OFFSET+21};
+
 	while (1) {
 		struct button_event event;
 		button_event_get(&event, K_FOREVER);
 
-		__ASSERT(event.index >= 0 && event.index < ARRAY_SIZE(key_map), "button index out of range");
-
-		switch (event.state)
-		{
-		case BUTTON_PRESSED:
-			keys_play(&_keys, key_map[event.index]);
-			break;
-		case BUTTON_RELEASED:
-			keys_stop(&_keys, key_map[event.index]);
-			break;
-		}
+		synthesizer_key_event(&event);
 	}
 }
