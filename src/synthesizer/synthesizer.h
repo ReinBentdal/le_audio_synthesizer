@@ -1,7 +1,7 @@
 /**
  * @file synthesizer.h
  * @author Rein Gundersen Bentdal
- * @brief Glue module
+ * @brief Glue module, synthesizer example using an arpeggio and a bank of oscillators with envelope and modulation
  * @version 0.1
  * @date 2023-01-11
  * 

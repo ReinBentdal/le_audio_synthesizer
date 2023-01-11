@@ -15,8 +15,9 @@ static int _notes_active_length = 0;
 static int _arp_current_note = 0;
 static int _arp_next_note_idx = 0;
 
-struct k_mutex _mutex;
+static struct k_mutex _mutex;
 
+static void _remove_note(uint32_t index);
 static void _remove_first_note(void);
 
 void arpeggio_init(key_play_cb play_cb, key_stop_cb stop_cb) {

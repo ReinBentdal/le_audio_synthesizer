@@ -28,11 +28,11 @@ static atomic_t _bt_is_ready = (atomic_t) false;
 
 static void _on_bt_ready(void);
 static int _hfclock_config_and_start(void);
-static void _button_msgq_reciever_thread(void*, void*, void*);
+static void _button_event_handler(void*, void*, void*);
 
-#define BUTTON_MSGQ_STACK_SIZE 700
-#define BUTTON_MSGQ_PRIORITY 5
-K_THREAD_DEFINE(_button_recieve_thread, BUTTON_MSGQ_STACK_SIZE, _button_msgq_reciever_thread, NULL, NULL, NULL, BUTTON_MSGQ_PRIORITY, 0, 0);
+#define BUTTON_EVENT_STACK_SIZE 700
+#define BUTTON_EVENT_PRIORITY 5
+K_THREAD_DEFINE(_button_event_thread, BUTTON_EVENT_STACK_SIZE, _button_event_handler, NULL, NULL, NULL, BUTTON_EVENT_PRIORITY, 0, 0);
 
 void main(void)
 {
@@ -103,7 +103,7 @@ static int _hfclock_config_and_start(void)
   return 0;
 }
 
-static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c) {
+static void _button_event_handler(void* _a, void* _b, void* _c) {
 	(void)_a;
 	(void)_b;
 	(void)_c;

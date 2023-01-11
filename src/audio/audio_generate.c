@@ -16,7 +16,6 @@ static bool _audio_codec_started;
 
 static void _encoder_work_submit(struct k_timer * _unused);
 static void _encoder(struct k_work * __unused);
-static void _button_msgq_reciever_thread(void* _a, void* _b, void* _c);
 
 struct k_timer _encoder_timer;
 K_TIMER_DEFINE(_encoder_timer, _encoder_work_submit, NULL);
