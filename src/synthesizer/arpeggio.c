@@ -3,85 +3,65 @@
 #include <zephyr/kernel.h>
 #include "tick_provider.h"
 
-int _tick_count = 0;
-
-struct keys _keys;
-
 #define MAX_ACTIVE_NOTES 5
 
-struct note_item {
-    int note;
-    struct note_item* next;
-};
+static int _tick_count = 0;
 
-struct note_item _notes[MAX_ACTIVE_NOTES];
+static struct keys _keys;
 
-/* sorted such that last played is first */
-struct note_item* _notes_head = NULL;
+static int _notes[MAX_ACTIVE_NOTES] = {0};
+static int _notes_active_length = 0;
 
-struct note_item* _playing_note = NULL;
-int _last_played_note = 0;
+static int _arp_current_note = 0;
+static int _arp_next_note_idx = 0;
 
 struct k_mutex _mutex;
+
+static void _remove_first_note(void);
 
 void arpeggio_init(key_play_cb play_cb, key_stop_cb stop_cb) {
     k_mutex_init(&_mutex);
 
     keys_init(&_keys, play_cb, stop_cb);
-
-    for (int i = 0; MAX_ACTIVE_NOTES; i++) {
-        _notes[i].note = 0;
-        _notes[i].next = _notes_head;
-        _notes_head = &_notes[i];
-    }
 }
 
-void arpeggio_play(int note) {
-
+void arpeggio_note_add(int note) {
     k_mutex_lock(&_mutex, K_FOREVER);
-    /* use last element i linked list */
-    struct note_item** p_indirect = &_notes_head;
 
-    /* iterate until til indirect points to the last element */
-    while ((*p_indirect)->next != NULL) {
-        p_indirect = &(*p_indirect)->next;
+    if (_notes_active_length == MAX_ACTIVE_NOTES-1) {
+        _remove_first_note();
+        _notes_active_length--;
     }
-    
-    struct note_item* last = *p_indirect;
-    last->note = note;
 
-    /* move to fron of list */
-    last->next = _notes_head;
-    _notes_head = last;
-
-    *p_indirect = NULL;
+    _notes[_notes_active_length] = note;
+    _notes_active_length++;
 
     k_mutex_unlock(&_mutex);
 }
 
-void arpeggio_stop(int note) {
-    struct note_item** p_indirect = &_notes_head;
+void arpeggio_note_remove(int note) {
+    k_mutex_lock(&_mutex, K_FOREVER);
 
-    while ((*p_indirect)->note != note && (*p_indirect)->note != 0) {
-        p_indirect = &(*p_indirect)->next;
+    for (int i = 0; i < MAX_ACTIVE_NOTES; i++) {
+        if (_notes[i] == note) {
+            _remove_note(i);
+            _notes_active_length--;
+            
+            /* if removed note was last and next arp note was last, the next arp note has to loop back to first note */
+            if (_arp_next_note_idx == _notes_active_length) {
+                _arp_next_note_idx = 0;
+            } 
+            
+            /* decrement next note if next note was shifted backwards */
+            else if (_arp_next_note_idx > i) {
+                _arp_next_note_idx--;
+            }
+
+            break;
+        }
     }
 
-    if ((*p_indirect)->note == 0) {
-        LOG_WRN("did not find note to stop in arpeggio");
-        return;
-    }
-
-    struct note_item* found = *p_indirect;
-    found->note = 0;
-    *p_indirect = found->next;
-
-    /* move to first of unused notes */
-    while ((*p_indirect)->next != NULL && (*p_indirect)->next->note != 0) {
-        p_indirect = &(*p_indirect)->next;
-    }
-
-    found->next = *p_indirect;
-    *p_indirect = &found;
+    k_mutex_unlock(&_mutex);
 }
 
 void arpeggio_tick(void) {
@@ -89,6 +69,39 @@ void arpeggio_tick(void) {
     if (_tick_count == PULSES_PER_QUARTER_NOTE) {
         _tick_count = 0;
 
+        k_mutex_lock(&_mutex, K_FOREVER);
 
+        /* stop last played note */
+        if (_arp_current_note != 0) {
+            keys_stop(&_keys, _arp_current_note);
+        }
+
+        if (_notes_active_length == 0) {
+            _arp_current_note = 0;
+        } else {
+            /* start next note */
+            _arp_current_note = _notes[_arp_next_note_idx];
+            keys_play(&_keys, _arp_current_note);
+
+            _arp_next_note_idx++;
+            if (_arp_next_note_idx == MAX_ACTIVE_NOTES) {
+                _arp_next_note_idx = 0;
+            }
+        }
+
+        k_mutex_unlock(&_mutex);
     }
+}
+
+static void _remove_note(uint32_t index) {
+    __ASSERT(index < MAX_ACTIVE_NOTES, "index out of range");
+
+    for (int i = index + 1; i < MAX_ACTIVE_NOTES; i++) {
+        _notes[i-1] =  _notes[i];
+    }
+    _notes[MAX_ACTIVE_NOTES-1] = 0;
+}
+
+static void _remove_first_note(void) {
+    _remove_note(0);
 }
