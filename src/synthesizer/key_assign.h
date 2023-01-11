@@ -1,3 +1,14 @@
+/**
+ * @file key_assign.h
+ * @author Rein Gundersen Bentdal
+ * @brief Keeps track of which keys are active and to which instrument oscillator bank to assign note
+ * @version 0.1
+ * @date 2023-01-11
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef _KEY_ASSIGN_H_
 #define _KEY_ASSIGN_H_
 

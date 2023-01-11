@@ -4,10 +4,11 @@ sample:
 common:
   integration_platforms:
       - nrf5340_audio_dk_nrf5340_cpuapp
+      - nrf5340dk_nrf5340_cpuapp
 tests:
   applications.nrf5340_audio.gateway:
     build_only: true
-    platform_allow: nrf5340_audio_dk_nrf5340_cpuapp
+    platform_allow: nrf5340_audio_dk_nrf5340_cpuapp nrf5340dk_nrf5340_cpuapp
     platform_exclude: nrf5340_audio_dk_nrf5340_cpuapp_ns
     tags: ci_build
     extra_args: CMAKE_BUILD_TYPE=RELEASE DEV_GATEWAY=ON

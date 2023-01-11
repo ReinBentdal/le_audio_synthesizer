@@ -8,5 +8,6 @@ target_sources(app PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/audio_generate.c
 	${CMAKE_CURRENT_SOURCE_DIR}/audio_sync_timer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/stream_control.c
-	${CMAKE_CURRENT_SOURCE_DIR}/sw_codec_select.c
+	${CMAKE_CURRENT_SOURCE_DIR}/sw_codec.c
+	${CMAKE_CURRENT_SOURCE_DIR}/tick_provider.c
 )

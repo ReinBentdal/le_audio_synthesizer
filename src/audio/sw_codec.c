@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
  */
 
-#include "sw_codec_select.h"
+#include "sw_codec.h"
 
 #include <zephyr/kernel.h>
 #include <errno.h>
 
-#include "pcm_stream_channel_modifier.h"
 #if (CONFIG_SW_CODEC_LC3)
 #include "sw_codec_lc3.h"
 #endif /* (CONFIG_SW_CODEC_LC3) */
@@ -22,6 +21,10 @@
 LOG_MODULE_REGISTER(sw_codec_select);
 
 static struct sw_codec_config m_config;
+
+static int _pcm_two_channel_split(void const *const input, size_t input_size, uint8_t pcm_bit_depth, void *output_left, void *output_right, size_t *output_size);
+static bool _is_valid_bit_depth(uint8_t pcm_bit_depth);
+static bool _is_valid_size(size_t size, uint8_t bytes_per_sample, uint8_t no_channels);
 
 #if (CONFIG_SW_CODEC_SBC)
 static bool sbc_first_frame_received;
@@ -62,7 +65,7 @@ int sw_codec_encode(void *pcm_data, size_t pcm_size, uint8_t **encoded_data, siz
 		/* Since LC3 is a single channel codec, we must split the
 		 * stereo PCM stream
 		 */
-		ret = pscm_two_channel_split(pcm_data, pcm_size, CONFIG_AUDIO_BIT_DEPTH_BITS,
+		ret = _pcm_two_channel_split(pcm_data, pcm_size, CONFIG_AUDIO_BIT_DEPTH_BITS,
 					     pcm_data_mono[AUDIO_CH_L], pcm_data_mono[AUDIO_CH_R],
 					     &pcm_block_size_mono);
 		if (ret) {
@@ -115,7 +118,7 @@ int sw_codec_encode(void *pcm_data, size_t pcm_size, uint8_t **encoded_data, siz
 #if (CONFIG_SW_CODEC_SBC)
 		static uint8_t pcm_data_prev_frame[AUDIO_CH_NUM][PCM_NUM_BYTES_SBC_FRAME_MONO];
 
-		ret = pscm_two_channel_split(pcm_data, pcm_size, CONFIG_AUDIO_BIT_DEPTH_BITS,
+		ret = _pcm_two_channel_split(pcm_data, pcm_size, CONFIG_AUDIO_BIT_DEPTH_BITS,
 					     pcm_data_mono[AUDIO_CH_L], pcm_data_mono[AUDIO_CH_R],
 					     &pcm_block_size_mono);
 		if (ret) {
@@ -357,3 +360,49 @@ static void _prev_frame_sbc_flush(char *pcm_data)
 	}
 }
 #endif
+
+static int _pcm_two_channel_split(void const *const input, size_t input_size, uint8_t pcm_bit_depth, void *output_left, void *output_right, size_t *output_size)
+{
+	uint8_t bytes_per_sample = pcm_bit_depth / 8;
+
+	if (!_is_valid_bit_depth(pcm_bit_depth) || !_is_valid_size(input_size, bytes_per_sample, 2)) {
+		return -EINVAL;
+	}
+
+	char *pointer_input = (char *)input;
+	char *pointer_output_left = (char *)output_left;
+	char *pointer_output_right = (char *)output_right;
+
+	for (uint32_t i = 0; i < input_size / bytes_per_sample; i += 2) {
+		for (uint8_t j = 0; j < bytes_per_sample; j++) {
+			*pointer_output_left++ = *pointer_input++;
+		}
+		for (uint8_t j = 0; j < bytes_per_sample; j++) {
+			*pointer_output_right++ = *pointer_input++;
+		}
+	}
+
+	*output_size = input_size / 2;
+	return 0;
+}
+
+static bool _is_valid_bit_depth(uint8_t pcm_bit_depth)
+{
+	if (pcm_bit_depth != 16 && pcm_bit_depth != 24 && pcm_bit_depth != 32) {
+		LOG_ERR("Invalid bit depth: %d", pcm_bit_depth);
+		return false;
+	}
+
+	return true;
+}
+
+static bool _is_valid_size(size_t size, uint8_t bytes_per_sample, uint8_t no_channels)
+{
+	if (size % (bytes_per_sample * no_channels) != 0) {
+		LOG_ERR("Size: %d is not dividable with number of bytes per sample x num channels",
+			size);
+		return false;
+	}
+
+	return true;
+}

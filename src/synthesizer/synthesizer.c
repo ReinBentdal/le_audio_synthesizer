@@ -8,8 +8,8 @@
 struct instrument _instrument;
 struct keys _keys;
 
-#define NOTE_OFFSET 40
-static const uint8_t key_map[] = {NOTE_OFFSET+12, NOTE_OFFSET+14, NOTE_OFFSET+18, NOTE_OFFSET+19, NOTE_OFFSET+21};
+#define NOTE_BASE 40
+static const uint8_t key_map[] = {NOTE_BASE+12, NOTE_BASE+14, NOTE_BASE+18, NOTE_BASE+19, NOTE_BASE+21};
 
 static inline void _key_play_cb(int index, int note);
 static inline void _key_stop_cb(int index);
@@ -40,6 +40,11 @@ void synthesizer_key_event(struct button_event* button_event) {
 bool synthesizer_process(int8_t* block, const size_t block_size) {
     return instrument_process(&_instrument, block, block_size);
 }
+
+void synthesizer_tick(void) {
+    
+}
+
 
 static inline void _key_play_cb(int index, int note) {
 	instrument_play_note(&_instrument, index, note);

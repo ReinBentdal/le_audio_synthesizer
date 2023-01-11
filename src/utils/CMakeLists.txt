@@ -5,6 +5,5 @@
 #
 
 target_sources(app PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/pcm_stream_channel_modifier.c
     ${CMAKE_CURRENT_SOURCE_DIR}/data_fifo.c
 )

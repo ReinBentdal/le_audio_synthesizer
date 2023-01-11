@@ -7,7 +7,7 @@
 #include "ble_transmit.h"
 
 #include "macros_common.h"
-#include "sw_codec_select.h"
+#include "sw_codec.h"
 #include "ble_hci_vsc.h"
 #include "audio_sync_timer.h"
 #include "ble_acl_common.h"
