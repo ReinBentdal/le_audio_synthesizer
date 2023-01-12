@@ -5,6 +5,8 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(keys, CONFIG_LOG_BUTTON_LEVEL);
 
+// TODO: rewrite to only use one linked list, sorted by newest played note. Alternatively switch to using arrays
+
 void keys_init(struct keys* keys, key_play_cb play_cb, key_stop_cb stop_cb) {
     __ASSERT(keys != NULL, "NULL pointer parameter");
     __ASSERT(play_cb != NULL, "play_cb must not be NULL");
@@ -13,15 +15,15 @@ void keys_init(struct keys* keys, key_play_cb play_cb, key_stop_cb stop_cb) {
     k_mutex_init(&keys->mutex);
 
     /* inserts all keys in the unused linked list */
-    keys->active_head = NULL;
-    keys->inactive_head = NULL;
+    keys->head = NULL;
     *(key_play_cb*)&keys->play_cb = play_cb;
     *(key_stop_cb*)&keys->stop_cb = stop_cb;
 
     for (int i = 0; i < CONFIG_MAX_NOTES; i++) {
-        keys->keys[i].index = i;
-        keys->keys[i].next = keys->inactive_head;
-        keys->inactive_head = &keys->keys[i];
+        keys->_keys[i].index = i;
+
+        keys->_keys[i].next = keys->head;
+        keys->head = &keys->_keys[i];
     }
 }
 
@@ -30,49 +32,24 @@ void keys_play(struct keys* keys, int note) {
 
     k_mutex_lock(&keys->mutex, K_FOREVER);
 
-    struct key_state* key;
-    
-    /* use inactive key which is the longest sinced been in use */
-    if (keys->inactive_head != NULL) {
-        __ASSERT(keys->inactive_head != NULL, "both inactive and active head cannot be null");
-        
-        key = keys->inactive_head;
-        struct key_state* prev = NULL;
-        while(key->next != NULL) {
-            prev = key;
-            key = key->next;
-        }
+    /* use last active note => last item in list */
+    struct key** key_indirect = &keys->head;
 
-        if (prev != NULL) {
-            prev->next = NULL;
-        } else {
-            keys->inactive_head = NULL;
-        } 
+    while ((*key_indirect)->next != NULL) {
+        key_indirect = &(*key_indirect)->next;
     }
 
-    /* remove active key which has played the longest */
-    else {
-        __ASSERT(keys->active_head != NULL, "both inactive and active head cannot be null");
-        key = keys->active_head;
-        struct key_state* prev = NULL;
-        while(key->next != NULL) {
-            prev = key;
-            key = key->next;
-        }
-        __ASSERT(prev != NULL, "there must be more than 2 elements in the active head if there are non in the inactive list");
-        prev->next = NULL;
-    }
-    // TODO: explicit stop note?
+    struct key* key = *key_indirect;
+    *key_indirect = NULL;
+
+    key->next = keys->head;
+    keys->head = key;
 
     key->note = note;
 
-    key->next = keys->active_head;
-    keys->active_head = key;
-
-    __ASSERT(keys->play_cb != NULL, "cb function is a NULL ptr");
-    keys->play_cb(key->index, key->note);
-    
     k_mutex_unlock(&keys->mutex);
+
+    keys->play_cb(key->index, key->note);
 }
 
 void keys_stop(struct keys* keys, int note) {
@@ -80,46 +57,47 @@ void keys_stop(struct keys* keys, int note) {
 
     k_mutex_lock(&keys->mutex, K_FOREVER);
 
-    struct key_state** next_ptr = &keys->active_head;
+    /* iterate through and move found key to after active keys */
+    struct key** key_indirect = &keys->head;
 
-    /* find the element which points to the element we want to remove */
-    while ((*next_ptr) && (*next_ptr)->note != note) {        
-        next_ptr = &(*next_ptr)->next;
+    while ((*key_indirect)->note != note) {
+        key_indirect = &(*key_indirect)->next;
+
+        if ((*key_indirect) == NULL || (*key_indirect)->note == 0) {
+            LOG_WRN("tried to stop note which was not already playing: %d", note);
+            k_mutex_unlock(&keys->mutex);
+            return;
+        }
     }
 
-    if ((*next_ptr) == NULL) {
-        LOG_WRN("tried stopping note which was not playing: %d", note);
-        k_mutex_unlock(&keys->mutex);
-        return;
+    /* remove key from list */
+    struct key* key = *key_indirect;
+    *key_indirect = key->next;
+
+    /* continue iterating until the next note is inactive or end of list */
+    while (*key_indirect != NULL && (*key_indirect)->note != 0) {
+        key_indirect = &(*key_indirect)->next;
     }
 
-    const uint8_t index = (*next_ptr)->index;
+    /* insert key again in list */
+    key->next = *key_indirect;
+    *key_indirect = key;
 
-    *next_ptr = (*next_ptr)->next;
-
-    (*next_ptr)->next = keys->inactive_head;
-    keys->inactive_head = *next_ptr;
+    key->note = 0;
 
     k_mutex_unlock(&keys->mutex);
 
-    keys->stop_cb(index);
+    keys->stop_cb(key->index);
 }
 
 void keys_print(struct keys* keys) {
     __ASSERT(keys != NULL, "NULL pointer parameter");
-    struct key_state* key;
+    struct key* key;
 
-    LOG_INF("--pressed--");
-    key = keys->active_head;
+    LOG_INF("--keys--");
+    key = keys->head;
     while(key != NULL) {
         LOG_INF("index %d, note %d", key->index, key->note);
-        key = key->next;
-    }
-
-    LOG_INF("--inactive");
-    key = keys->inactive_head;
-    while(key != NULL) {
-        LOG_INF("index %d", key->index);
         key = key->next;
     }
 }

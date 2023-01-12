@@ -1,0 +1,1 @@
+[Reverb fundamentals](https://valhalladsp.com/2009/05/30/schroeder-reverbs-the-forgotten-algorithm/)

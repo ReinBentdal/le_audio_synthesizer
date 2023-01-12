@@ -25,7 +25,7 @@ void effect_envelope_init(struct effect_envelope *this)
         .floor_level = 0.0,
         .duty_cycle = 0.05,
         .mode = ENVELOPE_MODE_LOOP,
-        .state = ENVELOPE_STATE_INACTIVE,
+        .state = ENVELOPE_STATE_SILENT,
         .new_state = false,
         .magnitude_next = 0,
     };
@@ -126,10 +126,16 @@ void effect_envelope_set_fade_out_attenuation(struct effect_envelope *this, floa
     this->fade_out_attenuation = a;
 }
 
+void effect_envelope_set_mode(struct effect_envelope* this, enum envelope_mode mode) {
+    __ASSERT_NO_MSG(this != NULL);
+
+    this->mode = mode;
+}
+
 bool effect_envelope_is_active(struct effect_envelope *this)
 {
     __ASSERT_NO_MSG(this != NULL);
-    return this->state != ENVELOPE_STATE_INACTIVE;
+    return this->state != ENVELOPE_STATE_SILENT;
 }
 
 bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t block_size)
@@ -166,7 +172,7 @@ bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t
             {
                 _set_envelope_state(this, ENVELOPE_STATE_HOLD);
             }
-            else
+            else if (this->mode == ENVELOPE_MODE_ONE_SHOT)
             {
                 _set_envelope_state(this, ENVELOPE_STATE_FADE_OUT);
             }
@@ -213,7 +219,7 @@ bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t
         else
         {
             this->magnitude_next = 0;
-            _set_envelope_state(this, ENVELOPE_STATE_INACTIVE);
+            _set_envelope_state(this, ENVELOPE_STATE_SILENT);
         }
 
         break;
@@ -229,8 +235,8 @@ bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t
         }
         break;
     }
-    case ENVELOPE_STATE_INACTIVE:
-        /* assumes the samples wount be used if false is returned */
+    case ENVELOPE_STATE_SILENT:
+        /* assumes samples wont be used if false is returned */
         return false;
     }
     return true;
@@ -272,8 +278,6 @@ static int16_t _calculate_envelope_magnitude(struct effect_envelope *this, float
 static inline void _set_envelope_state(struct effect_envelope *this, enum envelope_state state)
 {
     __ASSERT_NO_MSG(this != NULL);
-
-    LOG_INF("Envelope state %d", (int)state);
 
     this->state = state;
     this->new_state = true;

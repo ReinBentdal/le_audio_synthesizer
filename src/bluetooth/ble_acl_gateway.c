@@ -131,25 +131,29 @@ static int _device_found(uint8_t type, const uint8_t *data, uint8_t data_len,
 	char addr_str[BT_ADDR_LE_STR_LEN];
 	bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
 
-	const char addr_target[] = "NRF5340_AUDIO_H";
-	const size_t addr_target_len = strlen(addr_target) - 1;
+	const char* addr_targets[CONFIG_BT_MAX_CONN] = {"NRF5340_AUDIO_L", "NRF5340_AUDIO_H"};
 
-	if (strncmp(addr_target, data, addr_target_len) == 0) {
-		bt_le_scan_stop();
+	for (int ch = 0; ch < ARRAY_SIZE(addr_targets); ch++) {
+		if (strncmp(addr_targets[ch], data, strlen(addr_targets[ch]) - 1) == 0) {
+			bt_le_scan_stop();
 
-		int ret;
-		struct bt_conn *conn;
-		ret = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_MULTI, &conn);
-		if (ret) {
-			LOG_ERR("Could not init connection");
-			return ret;
+			int ret;
+			struct bt_conn *conn;
+			ret = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_MULTI, &conn);
+			if (ret) {
+				LOG_ERR("Could not init connection");
+				return ret;
+			}
+
+			ret = ble_acl_gateway_conn_peer_set(ch, &conn);
+			ERR_CHK_MSG(ret, "Connection peer set error");
+
+			LOG_INF("Connection established with headset (maybe)");
+
+			break;
 		}
-
-		ret = ble_acl_gateway_conn_peer_set(1, &conn);
-		ERR_CHK_MSG(ret, "Connection peer set error");
-
-		LOG_INF("Connection established with headset (maybe)");
 	}
+
 	return 0;
 }
 

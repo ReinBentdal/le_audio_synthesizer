@@ -18,7 +18,7 @@
 #define FADE_OUT_THRESHOLD 10
 
 enum envelope_state {
-    ENVELOPE_STATE_INACTIVE,
+    ENVELOPE_STATE_SILENT,
     ENVELOPE_STATE_LOOP,
     ENVELOPE_STATE_HOLD,
     ENVELOPE_STATE_FADE_OUT,
@@ -63,6 +63,7 @@ void effect_envelope_set_duty_cycle(struct effect_envelope* this, float duty);
 void effect_envelope_set_floor(struct effect_envelope* this, float floor);
 void effect_envelope_set_rising_curve(struct effect_envelope* this, float curve);
 void effect_envelope_set_falling_curve(struct effect_envelope* this, float curve);
+void effect_envelope_set_mode(struct effect_envelope* this, enum envelope_mode mode);
 
 void effect_envelope_set_fade_out_attenuation(struct effect_envelope* this, float attenuation);
 

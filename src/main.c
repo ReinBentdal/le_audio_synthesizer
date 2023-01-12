@@ -28,7 +28,7 @@ static atomic_t _bt_is_ready = (atomic_t) false;
 
 static void _on_bt_ready(void);
 static int _hfclock_config_and_start(void);
-static void _button_event_handler(void*, void*, void*);
+static void _button_event_handler(void);
 
 #define BUTTON_EVENT_STACK_SIZE 700
 #define BUTTON_EVENT_PRIORITY 5
@@ -61,6 +61,7 @@ void main(void)
   }
   LOG_DBG("bluetooth initialization done");
 
+  LOG_DBG("Audio generate init");
   audio_generate_init();
 
   LOG_DBG("stream control start");
@@ -103,11 +104,7 @@ static int _hfclock_config_and_start(void)
   return 0;
 }
 
-static void _button_event_handler(void* _a, void* _b, void* _c) {
-	(void)_a;
-	(void)_b;
-	(void)_c;
-
+static void _button_event_handler(void) {
 	while (1) {
 		struct button_event event;
 		button_event_get(&event, K_FOREVER);

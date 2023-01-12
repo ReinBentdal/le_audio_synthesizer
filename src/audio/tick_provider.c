@@ -5,16 +5,12 @@
 #include <zephyr/kernel.h>
 #include "audio_generate.h"
 
-struct tick_provider_subscriber
-{
-    tick_provideer_notify_cb notifier;
-    struct tick_provider_subscriber *next;
-};
 
-struct tick_provider_subscriber *_subscription_head = NULL;
 
-uint32_t _phase_accumulate;
-uint32_t _phase_increment;
+static struct tick_provider_subscriber *_subscription_head = NULL;
+
+static uint32_t _phase_accumulate;
+static uint32_t _phase_increment;
 
 void tick_provider_init(void)
 {
@@ -22,24 +18,26 @@ void tick_provider_init(void)
     _phase_increment = 0;
 }
 
-void tick_provider_subscribe(tick_provideer_notify_cb notifier)
+void tick_provider_subscribe(struct tick_provider_subscriber* subscriber, tick_provider_notify_cb notifier)
 {
+    __ASSERT_NO_MSG(subscriber != NULL);
     __ASSERT_NO_MSG(notifier != NULL);
+    __ASSERT(subscriber->next == NULL, "next item of tick provider subscriber is already set");
 
-    struct tick_provider_subscriber *tmp = _subscription_head;
-    *_subscription_head = (struct tick_provider_subscriber){
-        .notifier = notifier,
-        .next = tmp,
-    };
+    subscriber->next = _subscription_head;
+    subscriber->notifier = notifier;
+
+    _subscription_head = subscriber;
 }
 
-void tick_provider_unsubscribe(tick_provideer_notify_cb notifier)
+void tick_provider_unsubscribe(struct tick_provider_subscriber* subscriber)
 {
-    __ASSERT_NO_MSG(notifier != NULL);
+    __ASSERT_NO_MSG(subscriber != NULL);
+    __ASSERT_NO_MSG(_subscription_head != NULL);
 
     struct tick_provider_subscriber** current = &_subscription_head;
 
-    while ((*current)->notifier != notifier) {
+    while (*current != subscriber) {
         current = &(*current)->next;
         __ASSERT(*current != NULL, "reached end of list without finding item");
     }

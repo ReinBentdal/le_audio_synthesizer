@@ -18,18 +18,17 @@
 typedef void(*key_play_cb)(int index, int note);
 typedef void(*key_stop_cb)(int index);
 
-struct key_state {
+struct key {
     uint8_t index;
     uint8_t note;
     // velocity
 
-    struct key_state* next;
+    struct key* next;
 };
 
 struct keys {
-    struct key_state keys[CONFIG_MAX_NOTES];
-    struct key_state* active_head;
-    struct key_state* inactive_head;
+    struct key _keys[CONFIG_MAX_NOTES];
+    struct key* head;
     const key_play_cb play_cb;
     const key_stop_cb stop_cb;
 

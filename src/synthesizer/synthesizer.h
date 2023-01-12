@@ -1,27 +1,31 @@
 /**
- * @file synthesizer.h
+ * @file effect_envelope.h
  * @author Rein Gundersen Bentdal
- * @brief Glue module, synthesizer example using an arpeggio and a bank of oscillators with envelope and modulation
- * @version 0.1
- * @date 2023-01-11
+ * @date 2022-09-01
  * 
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2022
  * 
  */
 
-#ifndef _SYNTHESIZER_H_
-#define _SYNTHESIZER_H_
+#ifndef _AUDIO_INSTRUMENT_H_
+#define _AUDIO_INSTRUMENT_H_
 
-#include "button.h"
-#include "tick_provider.h"
+#include <stdbool.h>
 
-void synthesizer_init();
+#include "dsp/oscillator.h"
+#include "dsp/effect_modulation.h"
+#include "dsp/effect_envelope.h"
+#include "../io/button.h"
+
+
+void synthesizer_init(void);
 
 void synthesizer_key_event(struct button_event*);
 
 /* returns false if nothing was processed */
-bool synthesizer_process(int8_t* block, const size_t block_size);
+bool synthesizer_process(int8_t* block, size_t block_size);
 
+/* compatible with type tick_provider_notify_cb */
 void synthesizer_tick(void);
 
 #endif

@@ -15,23 +15,27 @@ static struct sw_codec_config _sw_codec_cfg;
 static bool _audio_codec_started;
 
 static void _encoder_work_submit(struct k_timer * _unused);
-static void _encoder(struct k_work * __unused);
+static void _encoder(struct k_work * _unused);
 
-struct k_timer _encoder_timer;
 K_TIMER_DEFINE(_encoder_timer, _encoder_work_submit, NULL);
 
 K_THREAD_STACK_DEFINE(_encoder_stack_area, CONFIG_ENCODER_STACK_SIZE);
 struct k_work_q _encoder_work_queue;
 K_WORK_DEFINE(_encoder_work, _encoder);
 
+static struct tick_provider_subscriber _syntheiziser_tick_provider;
 
 void audio_generate_init(void) {
 	
+	LOG_DBG("synthesizer init");
 	synthesizer_init();
+
+	LOG_DBG("tick provider init");
 	tick_provider_init();
 	
+	LOG_DBG("tick provider initial configuration");
 	tick_provider_set_bpm(128);
-	tick_provider_subscribe(synthesizer_tick);
+	tick_provider_subscribe(&_syntheiziser_tick_provider, synthesizer_tick);
 
 	/* audio blocks processed through a queue */
 	k_work_queue_init(&_encoder_work_queue);
@@ -113,7 +117,6 @@ static void _encoder(struct k_work * _unused) {
 		memset(pcm_raw_data, 0, FRAME_SIZE_BYTES * sizeof pcm_raw_data[0]);
 
 		/* audio proccessing here */
-		tick_provider_increment();
 		const bool did_process = synthesizer_process(pcm_raw_data, FRAME_SIZE_BYTES / CONFIG_AUDIO_BIT_DEPTH_OCTETS);
 		(void)did_process;
 
@@ -126,5 +129,8 @@ static void _encoder(struct k_work * _unused) {
 
 		/* Send encoded data over IPM */
 		stream_control_encoded_data_send(encoded_data, encoded_data_size);
+
+		/* increment audio time */
+		tick_provider_increment();
 	}
 }

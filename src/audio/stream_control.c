@@ -95,7 +95,6 @@ void stream_control_event_handler(void) {
         LOG_INF("BLE evt link ready");
         if (_stream_state == STATE_CONNECTED) {
             audio_generate_start();
-			LOG_INF("kok");
             _stream_state = STATE_STREAMING;
         }
         break;
