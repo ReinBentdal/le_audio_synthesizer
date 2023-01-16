@@ -3,8 +3,7 @@
 #include <stdlib.h>
 
 #include <zephyr/kernel.h>
-#include "audio_generate.h"
-
+#include "audio_process.h"
 
 
 static struct tick_provider_subscriber *_subscription_head = NULL;

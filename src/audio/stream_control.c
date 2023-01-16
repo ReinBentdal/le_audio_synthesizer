@@ -3,7 +3,7 @@
 #include <zephyr/kernel.h>
 #include "ble_transmit.h"
 #include "data_fifo.h"
-#include "audio_generate.h"
+#include "audio_process.h"
 #include "audio_sync_timer.h"
 #include "ble_hci_vsc.h"
 #include "ble_acl_common.h"
@@ -79,7 +79,7 @@ void stream_control_event_handler(void) {
         #if ((CONFIG_AUDIO_DEV == GATEWAY) && CONFIG_TRANSPORT_CIS)
         else if (_stream_state == STATE_STREAMING) {
             _stream_state = STATE_DISCONNECTED;
-            audio_generate_stop();
+            audio_process_stop();
         }
         #endif /* ((CONFIG_AUDIO_DEV == GATEWAY) && CONFIG_TRANSPORT_CIS) */
 
@@ -94,7 +94,7 @@ void stream_control_event_handler(void) {
     case BLE_EVT_LINK_READY:
         LOG_INF("BLE evt link ready");
         if (_stream_state == STATE_CONNECTED) {
-            audio_generate_start();
+            audio_process_start();
             _stream_state = STATE_STREAMING;
         }
         break;

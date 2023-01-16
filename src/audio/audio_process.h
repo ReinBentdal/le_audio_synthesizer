@@ -11,16 +11,16 @@
 
 #define AUDIO_BLOCK_SIZE FRAME_SIZE_BYTES / CONFIG_AUDIO_BIT_DEPTH_OCTETS
 
-void audio_generate_init(void);
+void audio_process_init(void);
 
 /**
  * @brief Initialize and start audio on gateway
  */
-void audio_generate_start(void);
+void audio_process_start(void);
 
 /**
  * @brief Stop all activities related to audio
  */
-void audio_generate_stop(void);
+void audio_process_stop(void);
 
 #endif /* _AUDIO_CODEC_H_ */

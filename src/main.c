@@ -13,7 +13,7 @@
 #include <debug/cpu_load.h>
 #endif
 
-#include "audio_generate.h"
+#include "audio_process.h"
 #include "ble_connection.h"
 #include "ble_discovered.h"
 #include "button.h"
@@ -62,7 +62,7 @@ void main(void)
   LOG_DBG("bluetooth initialization done");
 
   LOG_DBG("Audio generate init");
-  audio_generate_init();
+  audio_process_init();
 
   LOG_DBG("stream control start");
   ret = stream_control_start();

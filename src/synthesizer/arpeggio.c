@@ -22,6 +22,8 @@ static bool _arp_enabled = false;
 #define MAX_OCTAVES 3
 static uint32_t _arp_current_octave = 0;
 
+static uint32_t _divider;
+
 static void _remove_note(uint32_t index);
 static void _remove_first_note(void);
 
@@ -32,6 +34,8 @@ void arpeggio_init(key_play_cb play_cb, key_stop_cb stop_cb) {
     k_mutex_init(&_mutex);
 
     keys_init(&_keys, play_cb, stop_cb);
+
+    _divider = PULSES_PER_QUARTER_NOTE;
 }
 
 void arpeggio_note_add(int note) {
@@ -120,9 +124,18 @@ void arpeggio_tick(void) {
     }
 
     _tick_count++;
-    if (_tick_count == PULSES_PER_QUARTER_NOTE/2) {
+    if (_tick_count == _divider) {
         _tick_count = 0;
     }
+}
+
+void arpeggio_set_divider(uint32_t divider) {
+    __ASSERT_NO_MSG(divider != 0);
+
+    _divider = divider;
+
+    /* make sure tick count is not larger than divider */
+    _tick_count = 0;
 }
 
 static void _remove_note(uint32_t index) {

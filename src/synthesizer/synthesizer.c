@@ -4,43 +4,54 @@
 #include <arm_math.h>
 
 #include "dsp_instructions.h"
+#include "midi_note_to_frequency.h"
 
 #include "arpeggio.h"
+#include "dsp/oscillator.h"
+#include "dsp/effect_modulation.h"
+#include "dsp/effect_envelope.h"
+#include "dsp/effect_echo.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(dsp, CONFIG_LOG_DSP_LEVEL);
 
 #define NOTE_BASE 40
-static const uint8_t key_map[] = {NOTE_BASE-3, NOTE_BASE+2, NOTE_BASE+6, NOTE_BASE+9, NOTE_BASE+10};
+static const uint8_t key_map[] = {NOTE_BASE-3-12, NOTE_BASE+2, NOTE_BASE+6, NOTE_BASE+9, NOTE_BASE+14};
 
-static struct oscillator osciillators[CONFIG_MAX_NOTES];
-static struct effect_modulation modulation[CONFIG_MAX_NOTES];
-static struct effect_envelope envelopes[CONFIG_MAX_NOTES];
+static struct oscillator _osciillators[CONFIG_MAX_NOTES];
+static struct effect_modulation _modulation[CONFIG_MAX_NOTES];
+static struct effect_envelope _envelopes[CONFIG_MAX_NOTES];
+static struct effect_echo _echo;
 
-static inline float _note_to_freq(int note);
 static void _play_note(int index, int note);
 static void _stop_note(int index);
+static inline void _audio_stream_add(int8_t* destination, int8_t* source, size_t block_size);
 
 void synthesizer_init()
 {
     arpeggio_init(_play_note, _stop_note);
+    arpeggio_set_divider(12);
+
+    effect_echo_init(&_echo);
+    effect_echo_set_delay(&_echo, EFFECT_ECHO_MAX_SAMPLES);
+    effect_echo_set_feedback(&_echo, INT16_MAX / 2);
 
     /* configure parameters of the synthesizer */
     for (int i = 0; i < CONFIG_MAX_NOTES; i++)
     {
-        osc_init(&osciillators[i]);
-        osc_set_amplitude(&osciillators[i], 0);
+        osc_init(&_osciillators[i]);
+        osc_set_amplitude(&_osciillators[i], 0);
 
-        effect_modulation_init(&modulation[i]);
-        effect_modulation_set_amplitude(&modulation[i], 0.7f);
-        effect_modulation_set_freq(&modulation[i], 2);
+        effect_modulation_init(&_modulation[i]);
+        effect_modulation_set_amplitude(&_modulation[i], 0.7f);
+        effect_modulation_set_freq(&_modulation[i], 2);
 
-        effect_envelope_init(&envelopes[i]);
-        effect_envelope_set_periode(&envelopes[i], 100);
-        effect_envelope_set_duty_cycle(&envelopes[i], 0.0f);
-        effect_envelope_set_mode(&envelopes[i], ENVELOPE_MODE_ONE_SHOT);
-        effect_envelope_set_floor(&envelopes[i], 0.1f);
-        effect_envelope_set_fade_out_attenuation(&envelopes[i], 0.02f);
+        effect_envelope_init(&_envelopes[i]);
+        effect_envelope_set_periode(&_envelopes[i], 150);
+        effect_envelope_set_duty_cycle(&_envelopes[i], 0.9f);
+        effect_envelope_set_mode(&_envelopes[i], ENVELOPE_MODE_ONE_SHOT);
+        effect_envelope_set_floor(&_envelopes[i], 0.2f);
+        effect_envelope_set_fade_out_attenuation(&_envelopes[i], 0.02f);
     }
 }
 
@@ -51,101 +62,101 @@ void synthesizer_key_event(struct button_event* button_event) {
         case BUTTON_PRESSED: {
             __ASSERT(button_event->index <= ARRAY_SIZE(key_map), "button index out of range");
 
-            arpeggio_note_add(key_map[button_event->index]);
+            const uint8_t note = key_map[button_event->index];
+            arpeggio_note_add(note);
 
             break;
         }
         case BUTTON_RELEASED: {
             __ASSERT(button_event->index <= ARRAY_SIZE(key_map), "button index out of range");
 
-            arpeggio_note_remove(key_map[button_event->index]);
+            const uint8_t note = key_map[button_event->index];
+            arpeggio_note_remove(note);
 
             break;
         }
     }
 }
 
-
-
 bool synthesizer_process(int8_t *block, size_t block_size)
 {
     BUILD_ASSERT(CONFIG_AUDIO_BIT_DEPTH_OCTETS == 2, "synthesizer only support 16-bit");
     __ASSERT_NO_MSG(block != NULL);
 
-    bool did_process = false;
+    bool output_is_zero = true;
 
     for (int i = 0; i < CONFIG_MAX_NOTES; i++)
     {
-        if (effect_envelope_is_active(&envelopes[i]))
-        {
+        bool ret;
 
-            /* each oscillators directly modifies osc_block by appending its waveform. Thus a separate stage to combine each oscillator waveform is not necessary */
+        /* if the oscillator envelope is 0, there will be no output audio */
+        ret = effect_envelope_is_active(&_envelopes[i]);
+        if (ret == false) continue;
 
-            int8_t osc_block[CONFIG_AUDIO_BIT_DEPTH_OCTETS*block_size];
+        int8_t osc_block[CONFIG_AUDIO_BIT_DEPTH_OCTETS*block_size];
+        memset(osc_block, 0, CONFIG_AUDIO_BIT_DEPTH_OCTETS*block_size * sizeof osc_block[0]);
+        
+        ret = osc_process_sawtooth(&_osciillators[i], osc_block, block_size);
+        if (ret == false) continue;
 
-            memset(osc_block, 0, CONFIG_AUDIO_BIT_DEPTH_OCTETS*block_size * sizeof osc_block[0]);
-            
-            if (osc_process_triangle(&osciillators[i], osc_block, block_size))
-            {
-                // if(effect_modulation_process(&modulation[i], block, block_size)) {
-                // TODO: cannot assume effect_envelope_is_active returns the same in this position. Should force DSP to run without interrupts from other threads
-                if (effect_envelope_process(&envelopes[i], osc_block, block_size))
-                {
+        // ret = effect_modulation_process(&_modulation[i], block, block_size);
+        // if (ret == false) continue;
 
-                    /* add oscillator to audio stream */
-                    #if (CONFIG_EXPLICIT_DSP_INSTRUCTIONS)
-                    uint32_t *dst = (uint32_t *)block;
-                    const uint32_t *src = (uint32_t *)osc_block;
-                    const uint32_t *end = (uint32_t *)(((int16_t *)block) + block_size);
+        /* oscillator envelope, similar to ADSR */
+        ret = effect_envelope_process(&_envelopes[i], osc_block, block_size);
+        if (ret == false) continue;
 
-                    do
-                    {
-                        uint32_t tmp = *dst;
-                        *dst++ = signed_add_16_and_16(tmp, *src++);
-                        tmp = *dst;
-                        *dst++ = signed_add_16_and_16(tmp, *src++);
-                    } while (dst < end);
-                    #else
-                    for (int i = 0; i < block_size; i++)
-                    {
-                        ((int16_t *)block)[i] += ((int16_t *)osc_block)[i];
-                    }
-                    #endif
+        /* add oscillator to audio stream */
+        _audio_stream_add(block, osc_block, block_size);
 
-                    did_process = true;
-                }
-                // }
-
-                did_process = true;
-            }
-        }
+        output_is_zero = false;
     }
-    return did_process;
+
+    /* echo effect effecting all oscillators */
+    (void)effect_echo_process(&_echo, block, block_size);
+    
+    return true;
 }
 
 void synthesizer_tick(void) {
     arpeggio_tick();
 }
 
-static inline float _note_to_freq(int note)
-{
-    return 440 * powf(2, 1.f * (note - 69) / 12);
-}
-
 static void _play_note(int index, int note)
 {
     __ASSERT(index >= 0 && index < CONFIG_MAX_NOTES, "note index out of range");
 
-    const float freq = _note_to_freq(note);
-    osc_set_freq(&osciillators[index], freq);
-    osc_set_amplitude(&osciillators[index], 1.0f / CONFIG_MAX_NOTES);
+    const float freq = midi_note_to_frequency[note];
+    osc_set_freq(&_osciillators[index], freq);
+    osc_set_amplitude(&_osciillators[index], 1.0f / CONFIG_MAX_NOTES);
 
-    effect_envelope_start(&envelopes[index]);
+    effect_envelope_start(&_envelopes[index]);
 }
 
 static void _stop_note(int index)
 {
     __ASSERT(index >= 0 && index < CONFIG_MAX_NOTES, "note index out of range");
 
-    effect_envelope_end(&envelopes[index]);
+    effect_envelope_end(&_envelopes[index]);
+}
+
+static inline void _audio_stream_add(int8_t* destination, int8_t* source, size_t block_size) {
+        #if (CONFIG_EXPLICIT_DSP_INSTRUCTIONS)
+        uint32_t *dst = (uint32_t *)destination;
+        const uint32_t *src = (uint32_t *)source;
+        const uint32_t *end = (uint32_t *)(((int16_t *)destination) + block_size);
+
+        do
+        {
+            uint32_t tmp = *dst;
+            *dst++ = signed_add_16_and_16(tmp, *src++);
+            tmp = *dst;
+            *dst++ = signed_add_16_and_16(tmp, *src++);
+        } while (dst < end);
+        #else
+        for (int i = 0; i < block_size; i++)
+        {
+            ((int16_t *)destination)[i] += ((int16_t *)source)[i];
+        }
+        #endif
 }

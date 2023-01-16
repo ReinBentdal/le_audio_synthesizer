@@ -12,9 +12,6 @@
 
 #include <stdbool.h>
 
-#include "dsp/oscillator.h"
-#include "dsp/effect_modulation.h"
-#include "dsp/effect_envelope.h"
 #include "../io/button.h"
 
 

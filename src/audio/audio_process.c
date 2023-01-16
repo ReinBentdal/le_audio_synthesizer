@@ -1,4 +1,4 @@
-#include "audio_generate.h"
+#include "audio_process.h"
 
 #include <zephyr/kernel.h>
 #include "sw_codec.h"
@@ -25,7 +25,7 @@ K_WORK_DEFINE(_encoder_work, _encoder);
 
 static struct tick_provider_subscriber _syntheiziser_tick_provider;
 
-void audio_generate_init(void) {
+void audio_process_init(void) {
 	
 	LOG_DBG("synthesizer init");
 	synthesizer_init();
@@ -42,7 +42,7 @@ void audio_generate_init(void) {
 	k_work_queue_start(&_encoder_work_queue, _encoder_stack_area, K_THREAD_STACK_SIZEOF(_encoder_stack_area), K_PRIO_PREEMPT(CONFIG_ENCODER_THREAD_PRIO), NULL);
 }
 
-void audio_generate_start(void) {
+void audio_process_start(void) {
     int ret;
 
 
@@ -80,7 +80,7 @@ void audio_generate_start(void) {
 	_audio_codec_started = true;    
 }
 
-void audio_generate_stop(void) {
+void audio_process_stop(void) {
     int ret;
 
     if (!_audio_codec_started) {

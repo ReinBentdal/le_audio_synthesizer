@@ -15,7 +15,7 @@
 #include <stdbool.h>
 
 /* the fade out magnitude where the audio is interpreted as silent */
-#define FADE_OUT_THRESHOLD 10
+#define FADE_OUT_THRESHOLD 1
 
 enum envelope_state {
     ENVELOPE_STATE_SILENT,
