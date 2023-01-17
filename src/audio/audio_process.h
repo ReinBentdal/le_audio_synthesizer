@@ -1,5 +1,5 @@
-#ifndef _AUDIO_GENERATE_H_
-#define _AUDIO_GENERATE_H_
+#ifndef _AUDIO_PROCESS_H_
+#define _AUDIO_PROCESS_H_
 
 #include <stdint.h>
 

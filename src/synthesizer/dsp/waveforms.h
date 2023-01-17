@@ -11,4 +11,6 @@
 
 #include <stdint.h>
 
-extern const int16_t sinus_samples[257];
+#include "integer_math.h"
+
+extern const fixed16 sinus_samples[257];

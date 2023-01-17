@@ -13,6 +13,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "integer_math.h"
+
 #define BLK_PERIOD_US 1000
 
 /* Single audio block size in number of samples (stereo) */
@@ -23,15 +25,15 @@
 
 struct effect_modulation
 {
-	uint16_t magnitude;
+	ufixed16 magnitude;
 	uint32_t phase_increment;
 	uint32_t phase_accumulate;
 };
 
 /* standard interface */
 void effect_modulation_init(struct effect_modulation* mod);
-bool effect_modulation_process(struct effect_modulation* mod, int8_t* block, size_t block_size);
+bool effect_modulation_process(struct effect_modulation* mod, fixed16* block, size_t block_size);
 
 /* config */
-void effect_modulation_set_amplitude(struct effect_modulation* mod, float amplitude);
+void effect_modulation_set_amplitude(struct effect_modulation* mod, ufixed16 magnitude);
 void effect_modulation_set_freq(struct effect_modulation* mod, float freq);

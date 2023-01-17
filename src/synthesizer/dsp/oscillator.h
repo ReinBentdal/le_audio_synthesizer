@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "integer_math.h"
+
 #define BLK_PERIOD_US 1000
 
 /* Single audio block size in number of samples (stereo) */
@@ -24,7 +26,7 @@
 
 struct oscillator
 {
-	int16_t magnitude;
+	fixed16 magnitude;
 	uint32_t phase_increment;
 	uint32_t phase_accumulate;
 };
@@ -32,12 +34,13 @@ struct oscillator
 /* standard interface */
 void osc_init(struct oscillator* osc);
 
-bool osc_process_sine(struct oscillator* osc, int8_t* block, size_t block_size);
-bool osc_process_triangle(struct oscillator* osc, int8_t* block, size_t block_size);
-bool osc_process_sawtooth(struct oscillator* osc, int8_t* block, size_t block_size);
+bool osc_process_sine(struct oscillator* osc, fixed16* block, size_t block_size);
+bool osc_process_sinecrush(struct oscillator* osc, fixed16* block, size_t block_size);
+bool osc_process_triangle(struct oscillator* osc, fixed16* block, size_t block_size);
+bool osc_process_sawtooth(struct oscillator* osc, fixed16* block, size_t block_size);
 
 /* config */
-void osc_set_amplitude(struct oscillator* osc, float amplitude);
+void osc_set_amplitude(struct oscillator* osc, fixed16 magnitude);
 void osc_set_freq(struct oscillator* osc, float freq);
 
 #endif

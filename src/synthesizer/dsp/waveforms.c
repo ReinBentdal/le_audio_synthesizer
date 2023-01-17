@@ -1,6 +1,6 @@
 #include "waveforms.h"
 
-const int16_t sinus_samples[257] = {
+const fixed16 sinus_samples[257] = {
 	0,
 	804,
 	1608,

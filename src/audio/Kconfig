@@ -216,6 +216,10 @@ endmenu # Stream
 #----------------------------------------------------------------------------#
 menu "Log levels"
 
+config LOG_AUDIO_PROCESS_LEVEL
+	int "Log level for streamctrl"
+	default 3
+
 config LOG_AUDIO_CODEC_LEVEL
 	int "Log level for streamctrl"
 	default 3
