@@ -3,6 +3,11 @@ The new le audio specification brings improvements to Bluetooth audio. Lower lat
 
 This demo application demonstrates a simple polyphonic synthesizer using the nRF5340 Audio DK. The buttons on the device functions as a simple piano keyboard. The synthesized audio is sendt through le audio to a recieving nRF5340 Audio DK, which functions as the recieving part such as an headset.
 
+## Table of contents
+1. [System design](#system-design)
+2. [Signal processing](#signal-procesing)
+3. [Programming](#programming)
+
 ## System design
 The application is based on the nordic [nrf5340_audio](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html) demo application, but stripped down and specialized for a synthesizer use 
 case. 
@@ -11,13 +16,7 @@ The diagram below illustrates the general synthesizer flow.
 
 ![flowchart](assets/synth_flowchart.png)
 
-### Keys input
-
-### Signal processing
-
-### Transmission
-
-## Results
+# Signal procesing
 
 ## Programming
 There is provided prebuilt binaries which works out of the box. It is recomended to program these binaries with the included `program.py` script. Run `python program.py -h` to see available options. It is recomended to verify that you are able to get the prebuilt binaries to work before building and programming from source yourself. Example of using `program.py`:
