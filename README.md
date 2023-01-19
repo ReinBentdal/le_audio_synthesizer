@@ -24,8 +24,8 @@ There is provided prebuilt binaries which works out of the box. It is recomended
 Programming synthesizer board
 > python program.py --snr 1234567890 --device synth --board nrf5340_dk
 
-Programming left headset board
-> python program.py --snr 0987654321 --device left
+Programming left headset board, snr is inferred if only one device is connected. If not, you will be promted to select from a list
+> python program.py --device left
 
 ### Building and programming youself
 The application is developed using `nrf-sdk v2.0.2`. `common_net.hex` is borrowed from the `nrf5340_audio` application provided with this version of nrf-sdk, located in `bin/ble5-ctr-rpmsg_3251.hex`. The headsets has to be programmed with this audio application version to function correctly. The provided headset binaries are build from the stock `nrf5340_audio` application with added configs `CONFIG_AUDIO_HEADSET_CHANNEL_COMPILE_TIME=y` and `CONFIG_AUDIO_HEADSET_CHANNEL=x`, where x=0 => left headset, x=1 => right headset.
