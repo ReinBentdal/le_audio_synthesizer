@@ -6,7 +6,7 @@ This demo application demonstrates a simple polyphonic synthesizer using the nRF
 ## Table of contents
 1. [System design](#system-design)
 2. [Signal processing](#signal-procesing)
-3. [Programming](#programming)
+3. [Programming and testing](#programming-and-testing)
 
 ## System design
 The application is based on the nordic [nrf5340_audio](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html) demo application, but stripped down and specialized for a synthesizer use 
@@ -18,7 +18,14 @@ The diagram below illustrates the general synthesizer flow.
 
 ## Signal procesing
 
-## Programming
+## Programming and testing
+*Minimum hardware requirements:*
+- 1 nRF5340 dk
+- 1 nRF5340 audio dk
+  
+or
+- 2 nRF5340 audio dk
+
 There is provided prebuilt binaries which works out of the box. It is recomended to program these binaries with the included `program.py` script. Run `python program.py -h` to see available options. It is recomended to verify that you are able to get the prebuilt binaries to work before building and programming from source yourself. You should program both the synthesizer board as well as the headset boards. Example of using `program.py`:
 
 Programming synthesizer board
