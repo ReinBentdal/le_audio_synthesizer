@@ -21,8 +21,10 @@ The diagram below illustrates the general synthesizer flow.
 ## Programming
 There is provided prebuilt binaries which works out of the box. It is recomended to program these binaries with the included `program.py` script. Run `python program.py -h` to see available options. It is recomended to verify that you are able to get the prebuilt binaries to work before building and programming from source yourself. You should program both the synthesizer board as well as the headset boards. Example of using `program.py`:
 
+Programming synthesizer board
 > python program.py --snr 1234567890 --device synth --board nrf5340_dk
 
+Programming left headset board
 > python program.py --snr 0987654321 --device left
 
 ### Building and programming youself
