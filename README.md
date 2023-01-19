@@ -8,7 +8,8 @@ The application is based on the nordic [nrf5340_audio](https://developer.nordics
 case. 
 
 The diagram below illustrates the general synthesizer flow.
-![flowchart](assets/synth_flowchart.svg)
+
+![flowchart](assets/synth_flowchart.png)
 
 ### Keys input
 
