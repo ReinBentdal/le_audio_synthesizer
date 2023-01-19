@@ -74,7 +74,6 @@ def program_headset(snr, ch):
     ret = system(cmd)
     ret_chk(ret, "failed to restart device")
 
-connected_devices = get_connected_devices()
 
 # parse program arguments
 parser = argparse.ArgumentParser(
@@ -113,13 +112,19 @@ parser.add_argument(
     help='Serial number of device. If only one device is connected, the snr is inferred. If there are more than one device connected and --snr is not provided as an argument, you will be promted to select which one to program.',
 )
 
-options = parser.parse_args(args=sys.argv[1:])
+arg_options = parser.parse_args(args=sys.argv[1:])
 
-# get provided snr, infer if only one device connected, or user select from list
-if options.snr != None:
-    snr = options.snr
+connected_devices = get_connected_devices()
+
+# snr as provided from program arguments
+if arg_options.snr != None:
+    snr = arg_options.snr
+
+# infer if only one device is connected
 elif len(connected_devices) == 1:
     snr = connected_devices[0]
+
+# promt user to select which device to program
 elif len(connected_devices) > 1:
     snr_index = 0
     while(True):
@@ -133,14 +138,16 @@ elif len(connected_devices) > 1:
         
         break
     snr = connected_devices[snr_index]
+
+# nothing to program
 else:
     log_err("no available device to program")
     exit()
 
 # start programming according to provided arguments
-if options.device == 'synth':
-    program_synth(snr, options.board)
-else:
-    program_headset(snr, options.device)
+if arg_options.device == 'synth':
+    program_synth(snr, arg_options.board)
+else: # headset, left or right
+    program_headset(snr, arg_options.device)
 
 log_inf("Programmed successfully!")
