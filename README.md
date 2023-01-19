@@ -21,8 +21,7 @@ The diagram below illustrates the general synthesizer flow.
 ## Programming and testing
 *Minimum hardware requirements:*
 - 1 nRF5340 dk
-- 1 nRF5340 audio dk
-  
+- 1 nRF5340 audio dk \
 or
 - 2 nRF5340 audio dk
 
