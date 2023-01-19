@@ -25,6 +25,7 @@ The diagram below illustrates the general synthesizer flow.
 or
 - 2 nRF5340 audio dk
 
+### Programming
 There is provided prebuilt binaries which works out of the box. It is recomended to program these binaries with the included `program.py` script. Run `python program.py -h` to see available options. It is recomended to verify that you are able to get the prebuilt binaries to work before building and programming from source yourself. You should program both the synthesizer board as well as the headset boards. Example of using `program.py`:
 
 Programming synthesizer board
@@ -33,7 +34,7 @@ Programming synthesizer board
 Programming left headset board, snr is inferred if only one device is connected. If not, you will be promted to select from a list
 > python program.py --device left
 
-### Building and programming youself
+#### Building and programming youself
 The application is developed using `nrf-sdk v2.0.2`. `common_net.hex` is borrowed from the `nrf5340_audio` application provided with this version of nrf-sdk, located in `bin/ble5-ctr-rpmsg_3251.hex`. The headsets has to be programmed with this audio application version to function correctly. The provided headset binaries are build from the stock `nrf5340_audio` application with added configs `CONFIG_AUDIO_HEADSET_CHANNEL_COMPILE_TIME=y` and `CONFIG_AUDIO_HEADSET_CHANNEL=x`, where x=0 => left headset, x=1 => right headset.
 
 It is recomended to build and program the synth application through VS Code with the nrf Connect extension. Select the board you want to build for. Add `overlay-debug.conf` to your kconfig build configuration.\
@@ -47,3 +48,6 @@ The application uses the LC3 codec (closed source). Make sure to include it thro
 `west update`
 
 The application should now be ready to build through the build action in the nrf connect vs code extension.
+
+### Testing
+Turn on both the synthesizer board as well as 1 or 2 headset boards. If `LED1`(blue) lights up on the headset board, there is a connection. By pressing the `Play/Pause` button on the headset board, audio output is enabled. Connect speaker to the headphone aux connection on the headset. Pressing `Button 1` to `Button 4` on the synthesizer board should now result in audio from the speaker.
