@@ -20,6 +20,7 @@
 #include "macros_common.h"
 #include "stream_control.h"
 #include "synthesizer.h"
+#include "led.h"
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main, CONFIG_LOG_MAIN_LEVEL);
@@ -44,12 +45,16 @@ void main(void)
   cpu_load_init();
 #endif
 
-  LOG_DBG("ble discovered init");
-  ble_discovered_init();
 
   LOG_DBG("hf clock start");
   ret = _hfclock_config_and_start();
   ERR_CHK_MSG(ret, "failed to start hf clock");
+
+  ret = led_init();
+  ERR_CHK_MSG(ret, "failed to initialize leds");
+
+  LOG_DBG("ble discovered init");
+  ble_discovered_init();
 
   LOG_DBG("bluetooth start");
   ret = bluetooth_init(_on_bt_ready);
@@ -60,6 +65,10 @@ void main(void)
     (void)k_sleep(K_MSEC(100));
   }
   LOG_DBG("bluetooth initialization done");
+
+  LOG_DBG("Audio sync timer init");
+  ret = audio_sync_timer_init();
+  ERR_CHK_MSG(ret, "failed to initialize audio sync timer");
 
   LOG_DBG("Audio generate init");
   audio_process_init();

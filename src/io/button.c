@@ -19,14 +19,14 @@ static inline void _button1_event_interrupt(const struct device* port, struct gp
 static inline void _button2_event_interrupt(const struct device* port, struct gpio_callback* cb, uint32_t pin_mask) { _button_event_interrupt(port, 1); }
 static inline void _button3_event_interrupt(const struct device* port, struct gpio_callback* cb, uint32_t pin_mask) { _button_event_interrupt(port, 2); }
 static inline void _button4_event_interrupt(const struct device* port, struct gpio_callback* cb, uint32_t pin_mask) { _button_event_interrupt(port, 3); }
-static inline void _button5_event_interrupt(const struct device* port, struct gpio_callback* cb, uint32_t pin_mask) { _button_event_interrupt(port, 4); }
+// static inline void _button5_event_interrupt(const struct device* port, struct gpio_callback* cb, uint32_t pin_mask) { _button_event_interrupt(port, 4); }
 
 static void _button_debounce_cb(int index);
 static inline void _button1_debounce_done(struct k_timer* timer) { _button_debounce_cb(0); }
 static inline void _button2_debounce_done(struct k_timer* timer) { _button_debounce_cb(1); }
 static inline void _button3_debounce_done(struct k_timer* timer) { _button_debounce_cb(2); }
 static inline void _button4_debounce_done(struct k_timer* timer) { _button_debounce_cb(3); }
-static inline void _button5_debounce_done(struct k_timer* timer) { _button_debounce_cb(4); }
+// static inline void _button5_debounce_done(struct k_timer* timer) { _button_debounce_cb(4); }
 
 static int _button_state_notify(uint8_t index, enum button_state state);
 
@@ -66,12 +66,12 @@ static struct button_config _button_config[] = {
       .event_interrupt = _button4_event_interrupt,
       .debounce_cb = _button4_debounce_done,
   },
-  {
-      .pin = DT_GPIO_PIN(DT_ALIAS(sw4), gpios),
-      .config_mask = DT_GPIO_FLAGS(DT_ALIAS(sw4), gpios),
-      .event_interrupt = _button5_event_interrupt,
-      .debounce_cb = _button5_debounce_done,
-  }
+  // {
+  //     .pin = DT_GPIO_PIN(DT_ALIAS(sw4), gpios),
+  //     .config_mask = DT_GPIO_FLAGS(DT_ALIAS(sw4), gpios),
+  //     .event_interrupt = _button5_event_interrupt,
+  //     .debounce_cb = _button5_debounce_done,
+  // }
 };
 
 static struct gpio_callback _button_callback[ARRAY_SIZE(_button_config)];

@@ -1,3 +1,12 @@
+/**
+ * @file effect_envelope.h
+ * @author Rein Gundersen Bentdal
+ * @date 2023-01-17
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #ifndef _FILTER_ALLPASS_H_
 #define _FILTER_ALLPASS_H_
 

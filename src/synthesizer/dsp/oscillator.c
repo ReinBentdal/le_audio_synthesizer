@@ -101,10 +101,9 @@ bool osc_process_triangle(struct oscillator* osc, fixed16* block, size_t block_s
   for (int i = 0; i < block_size; i++) {
     uint32_t phtop = osc->phase_accumulate >> 30;
     if (phtop == 1 || phtop == 2) {
-      block[i] += UFIXED_MULTIPLY((0xFFFF - ((int32_t)osc->phase_accumulate >> 15)), osc->magnitude);
+      block[i] = UFIXED_MULTIPLY(0xFFFF - ((int32_t)osc->phase_accumulate >> 15), osc->magnitude);
     } else {
-      
-      block[i] += UFIXED_MULTIPLY((int32_t)osc->phase_accumulate >> 15, osc->magnitude);
+      block[i] = UFIXED_MULTIPLY((int32_t)osc->phase_accumulate >> 15, osc->magnitude);
     }
     osc->phase_accumulate += osc->phase_increment;
   }
@@ -122,11 +121,8 @@ bool osc_process_sawtooth(struct oscillator* osc, fixed16* block, size_t block_s
   }
 
   for (int i = 0; i < block_size; i++) {
-#if CONFIG_EXPLICIT_DSP_INSTRUCTIONS
-    block[i] += signed_multiply_32x16t(osc->magnitude, osc->phase_accumulate);
-#else
-    block[i] += (osc->magnitute * (osc->phase_accumulate >> 16)) >> 16;
-#endif
+    block[i] = signed_multiply_32x16t(osc->magnitude, osc->phase_accumulate);
+
     osc->phase_accumulate += osc->phase_increment;
   }
 

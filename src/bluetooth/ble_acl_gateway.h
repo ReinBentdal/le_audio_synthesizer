@@ -46,6 +46,8 @@ void work_scan_start(struct k_work *item);
  */
 void ble_acl_gateway_on_connected(struct bt_conn *conn);
 
+void ble_acl_gateway_on_disconnected(struct bt_conn *conn);
+
 /**@brief Start the MTU exchange procedure.
  *
  * @param conn	Connection to peer

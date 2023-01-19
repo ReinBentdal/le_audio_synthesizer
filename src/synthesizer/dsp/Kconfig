@@ -7,10 +7,6 @@ config LOG_DSP_LEVEL
 	int "Log level for DSP"
 	default 4
 
-config EXPLICIT_DSP_INSTRUCTIONS
-	bool "Use ARM DSP instructions explicitly for potential performance gain"
-	default n
-
 endmenu
 
 endmenu

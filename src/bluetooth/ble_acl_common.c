@@ -139,6 +139,8 @@ static void _on_disconnected_cb(struct bt_conn *conn, uint8_t reason)
 			ret = ble_acl_gateway_conn_peer_set(i, &conn_active);
 			ERR_CHK_MSG(ret, "Connection peer set error");
 			LOG_DBG("Headset %d disconnected", i);
+
+			ble_acl_gateway_on_disconnected(conn);
 			break;
 		}
 	}

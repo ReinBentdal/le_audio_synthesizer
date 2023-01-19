@@ -43,7 +43,7 @@ void effect_envelope_end(struct effect_envelope *this)
     _set_envelope_state(this, ENVELOPE_STATE_FADE_OUT);
 }
 
-void effect_envelope_set_periode(struct effect_envelope *this, float ms)
+void effect_envelope_set_period(struct effect_envelope *this, float ms)
 {
     __ASSERT_NO_MSG(this != NULL);
     __ASSERT(ms >= -CONFIG_AUDIO_SAMPLE_RATE_HZ / 2 && ms <= CONFIG_AUDIO_SAMPLE_RATE_HZ, "envelope periode out of range");
@@ -136,7 +136,7 @@ bool effect_envelope_is_active(struct effect_envelope *this)
     return this->state != ENVELOPE_STATE_SILENT;
 }
 
-bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t block_size)
+bool effect_envelope_process(struct effect_envelope *this, fixed16 *block, size_t block_size)
 {
     __ASSERT_NO_MSG(this != NULL);
 
@@ -186,7 +186,7 @@ bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t
 
             int32_t sample_L = ((int16_t*)block)[i];
             sample_L = (sample_L * magnitude) >> 15;
-            ((int16_t *)block)[i] = sample_L;
+            block[i] = sample_L;
         }
         this->phase_accumulator = accumulator_upper;
         this->magnitude_next = end_magnitude;
@@ -207,7 +207,7 @@ bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t
 
             int32_t sample_L = ((int16_t*)block)[i];
             sample_L = (sample_L * magnitude) >> 15;
-            ((int16_t *)block)[i] = sample_L;
+            block[i] = sample_L;
         }
 
         if (end > FADE_OUT_THRESHOLD)
@@ -229,7 +229,7 @@ bool effect_envelope_process(struct effect_envelope *this, int8_t *block, size_t
         {
             int32_t sample_L = ((int16_t*)block)[i];
             sample_L = (sample_L * magnitude) >> 15;
-            ((int16_t *)block)[i] = sample_L;
+            block[i] = sample_L;
         }
         break;
     }

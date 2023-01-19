@@ -446,7 +446,7 @@ int ble_trans_iso_tx_anchor_get(enum ble_trans_chan_type chan_type, uint32_t *ti
 
 	if (chan_idx == -1)
 	{
-		return -ENOLINK;
+		return -EPERM;
 	}
 
 	__ASSERT_NO_MSG(_iso_chan_ptr[chan_idx]->iso != NULL);

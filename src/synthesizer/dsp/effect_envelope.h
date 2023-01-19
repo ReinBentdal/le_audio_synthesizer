@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#include "integer_math.h"
+
 /* the fade out magnitude where the audio is interpreted as silent */
 #define FADE_OUT_THRESHOLD 1
 
@@ -34,14 +36,12 @@ struct effect_envelope {
     uint32_t phase_accumulator;
     int32_t phase_increment;
 
-    // TODO: int processing?
     float floor_level;
     float duty_cycle;
     float rising_curve;
     float falling_curve;
     float fade_out_attenuation;
 
-    /* */
     enum envelope_mode mode;
     enum envelope_state state;
 
@@ -52,13 +52,13 @@ struct effect_envelope {
 
 /* standard interface */
 void effect_envelope_init(struct effect_envelope* this);
-bool effect_envelope_process(struct effect_envelope* this, int8_t* block, size_t block_size);
+bool effect_envelope_process(struct effect_envelope* this, fixed16* block, size_t block_size);
 
 void effect_envelope_start(struct effect_envelope* this);
 void effect_envelope_end(struct effect_envelope* this);
 
 /* config */
-void effect_envelope_set_periode(struct effect_envelope* this, float ms);
+void effect_envelope_set_period(struct effect_envelope* this, float ms);
 void effect_envelope_set_duty_cycle(struct effect_envelope* this, float duty);
 void effect_envelope_set_floor(struct effect_envelope* this, float floor);
 void effect_envelope_set_rising_curve(struct effect_envelope* this, float curve);

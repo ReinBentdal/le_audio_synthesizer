@@ -71,6 +71,8 @@ void synthesizer_key_event(struct button_event* button_event) {
             const uint8_t note = key_map[button_event->index];
             arpeggio_note_add(note);
 
+            LOG_DBG("button %u pressed", button_event->index);
+
             break;
         }
         case BUTTON_RELEASED: {
@@ -78,6 +80,8 @@ void synthesizer_key_event(struct button_event* button_event) {
 
             const uint8_t note = key_map[button_event->index];
             arpeggio_note_remove(note);
+
+            LOG_DBG("button %u released", button_event->index);
 
             break;
         }
@@ -89,8 +93,6 @@ bool synthesizer_process(fixed16* block, size_t block_size)
     BUILD_ASSERT(CONFIG_AUDIO_BIT_DEPTH_OCTETS == 2, "synthesizer only support 16-bit");
     __ASSERT_NO_MSG(block != NULL);
 
-    bool output_is_zero = true;
-
     for (int i = 0; i < CONFIG_MAX_NOTES; i++)
     {
         bool ret;
@@ -100,7 +102,6 @@ bool synthesizer_process(fixed16* block, size_t block_size)
         if (ret == false) continue;
 
         fixed16 osc_block[block_size];
-        memset(osc_block, 0, block_size * sizeof osc_block[0]);
         
         ret = osc_process_sinecrush(&_osciillators[i], osc_block, block_size);
         if (ret == false) continue;
@@ -114,8 +115,6 @@ bool synthesizer_process(fixed16* block, size_t block_size)
 
         /* add oscillator to audio stream */
         _audio_stream_add(block, osc_block, block_size);
-
-        output_is_zero = false;
     }
 
     /* echo effect effecting all oscillators */
@@ -147,24 +146,16 @@ static void _stop_note(int index)
 }
 
 static inline void _audio_stream_add(fixed16* destination, fixed16* source, size_t block_size) {
-        #if (CONFIG_EXPLICIT_DSP_INSTRUCTIONS)
-        uint32_t *dst = (uint32_t *)destination;
-        const uint32_t *src = (uint32_t *)source;
-        const uint32_t *end = (uint32_t *)(destination + block_size);
 
+    uint32_t *dst = (uint32_t *)destination;
+    const uint32_t *src = (uint32_t *)source;
+    const uint32_t *end = (uint32_t *)(destination + block_size);
 
-        do
-        {
-            /* adds 4 samples for each loop cycle */
-            uint32_t tmp = *dst;
-            *dst++ = signed_add_16_and_16(tmp, *src++);
-            tmp = *dst;
-            *dst++ = signed_add_16_and_16(tmp, *src++);
-        } while (dst < end);
-        #else
-        for (int i = 0; i < block_size; i++)
-        {
-            ((int16_t *)destination)[i] += ((int16_t *)source)[i];
-        }
-        #endif
+    do {
+        /* adds 4 samples for each loop cycle */
+        uint32_t tmp = *dst;
+        *dst++ = signed_add_16_and_16(tmp, *src++);
+        tmp = *dst;
+        *dst++ = signed_add_16_and_16(tmp, *src++);
+    } while (dst < end);
 }

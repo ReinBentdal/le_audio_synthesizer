@@ -9,6 +9,7 @@
 #include "ble_audio_services.h"
 #include "macros_common.h"
 #include "ble_discovered.h"
+#include "led.h"
 
 #include <zephyr/kernel.h>
 #include <zephyr/bluetooth/hci.h>
@@ -35,6 +36,7 @@ static void _ad_parse(struct net_buf_simple *p_ad, const bt_addr_le_t *addr, con
 static void _on_advertising_recieved(const bt_addr_le_t *addr, int8_t rssi, uint8_t type, struct net_buf_simple *p_ad);
 static int _ble_acl_gateway_service_discover(struct bt_conn *conn, uint8_t channel_num);
 static void _mtu_exchange_handler(struct bt_conn *conn, uint8_t err, struct bt_gatt_exchange_params *params);
+static void _update_leds(void);
 
 int ble_acl_gateway_conn_peer_get(uint8_t chan_number, struct bt_conn **p_conn)
 {
@@ -97,6 +99,16 @@ void ble_acl_gateway_on_connected(struct bt_conn *conn)
 {
 	(void)conn;
 	LOG_DBG("Connected - nRF5340 Audio gateway");
+
+	_update_leds();
+}
+
+void ble_acl_gateway_on_disconnected(struct bt_conn *conn) {
+	ARG_UNUSED(conn);
+
+	LOG_DBG("Disconnected - nRF5340 Audio gateway");
+
+	_update_leds();
 }
 
 int ble_acl_gateway_mtu_exchange(struct bt_conn *conn)
@@ -131,10 +143,10 @@ static int _device_found(uint8_t type, const uint8_t *data, uint8_t data_len,
 	char addr_str[BT_ADDR_LE_STR_LEN];
 	bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
 
-	const char* addr_targets[CONFIG_BT_MAX_CONN] = {"NRF5340_AUDIO_L", "NRF5340_AUDIO_H"};
+	const char* addr_targets[CONFIG_BT_MAX_CONN] = {"NRF5340_AUDIO_H_L", "NRF5340_AUDIO_H_R"};
 
 	for (int ch = 0; ch < ARRAY_SIZE(addr_targets); ch++) {
-		if (strncmp(addr_targets[ch], data, strlen(addr_targets[ch]) - 1) == 0) {
+		if (strncmp(addr_targets[ch], data, strlen(addr_targets[ch]) - 1) == 0 && _gateway_conn_peer[ch] == NULL) {
 			bt_le_scan_stop();
 
 			int ret;
@@ -149,7 +161,6 @@ static int _device_found(uint8_t type, const uint8_t *data, uint8_t data_len,
 			ERR_CHK_MSG(ret, "Connection peer set error");
 
 			LOG_INF("Connection established with headset (maybe)");
-
 			break;
 		}
 	}
@@ -245,5 +256,11 @@ static void _mtu_exchange_handler(struct bt_conn *conn, uint8_t err,
 
 		ret = ble_trans_iso_cis_connect(conn);
 		ERR_CHK_MSG(ret, "Failed to connect to ISO CIS channel");
+	}
+}
+
+static void _update_leds(void) {
+	for (int ch = 0; ch < ARRAY_SIZE(_gateway_conn_peer); ch++) {
+		led_headset_connected(ch, _gateway_conn_peer[ch] != NULL);
 	}
 }
