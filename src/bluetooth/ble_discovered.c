@@ -120,7 +120,7 @@ static void _device_insert(struct bt_device* device, struct bt_device* prev) {
     __ASSERT_NO_MSG(device != NULL);
     __ASSERT_NO_MSG(device->next == NULL);
 
-    /* insert front */
+    /* insert first */
     if (prev == NULL) {
         device->next = _bt_device_discovered;
         _bt_device_discovered = device;
@@ -131,6 +131,7 @@ static void _device_insert(struct bt_device* device, struct bt_device* prev) {
         prev->next = device;
     }
 
+    /* insert middle */
     else {
         device->next = prev->next;
         prev->next = device;
@@ -158,11 +159,12 @@ static void _device_remove(struct bt_device* device, struct bt_device* prev) {
     __ASSERT_NO_MSG(device != NULL);
     __ASSERT_NO_MSG((prev != NULL && prev->next == device) || prev == NULL);
 
-    if (prev != NULL) {
-        prev->next = device->next;
-    } else {
+    /* last element */
+    if (prev == NULL) {
         __ASSERT(_bt_device_discovered == device, "if there is no previous device, the current must be the first");
         _bt_device_discovered = device->next;
+    } else {
+        prev->next = device->next;
     }
 
     device->next = _bt_device_unused;

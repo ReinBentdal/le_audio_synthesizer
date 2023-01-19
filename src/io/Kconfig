@@ -1,0 +1,13 @@
+
+
+menu "Input"
+
+config BUTTON_DEBOUNCE_MS
+    int "Button debounce time in ms"
+    default 50
+
+config LOG_BUTTON_LEVEL
+    int "Log level for button.h"
+    default 4
+
+endmenu # Input

@@ -1,3 +1,4 @@
 build/
 build_release/
+build_nrf5340dk/
 .vscode/

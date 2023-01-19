@@ -154,17 +154,6 @@ static inline uint32_t pack_16b_16b(int32_t a, int32_t b)
     return out;
 }
 
-// computes ((a[15:0] << 16) | b[15:0])
-/*
-static inline uint32_t pack_16x16(int32_t a, int32_t b) __attribute__((always_inline, unused));
-static inline uint32_t pack_16x16(int32_t a, int32_t b)
-{
-    int32_t out;
-    __asm__ volatile("pkhbt %0, %1, %2, lsl #16" : "=r" (out) : "r" (b), "r" (a));
-    return out;
-}
-*/
-
 // computes (((a[31:16] + b[31:16]) << 16) | (a[15:0 + b[15:0]))  (saturates)
 static inline uint32_t signed_add_16_and_16(uint32_t a, uint32_t b) __attribute__((always_inline, unused));
 static inline uint32_t signed_add_16_and_16(uint32_t a, uint32_t b)

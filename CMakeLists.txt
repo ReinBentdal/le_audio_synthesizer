@@ -21,11 +21,11 @@ target_sources(app PRIVATE
 # Include application events and configuration headers
 zephyr_library_include_directories(
     src/audio
-    src/dsp
     src/bluetooth
     src/utils
     src/utils/macros
-    src/input
+    src/io
+    src/synthesizer
 )
 
 zephyr_library_include_directories(app PRIVATE
@@ -33,10 +33,10 @@ zephyr_library_include_directories(app PRIVATE
 
 # Application sources
 add_subdirectory(src/audio)
-add_subdirectory(src/dsp)
 add_subdirectory(src/bluetooth)
 add_subdirectory(src/utils)
-add_subdirectory(src/input)
+add_subdirectory(src/io)
+add_subdirectory(src/synthesizer)
 
 ## LC3
 if (CONFIG_SW_CODEC_LC3_T2_SOFTWARE)
@@ -49,18 +49,5 @@ if (CONFIG_SW_CODEC_LC3_T2_SOFTWARE)
                 "and then 'west update'.\n"
                 "If access is denied, contact local Nordic Semiconductor "
                 "support or use SBC codec")
-    endif()
-endif()
-
-
-## Cirrus Logic
-if (CONFIG_HW_CODEC_CIRRUS_LOGIC)
-    if (ZEPHYR_CIRRUS_LOGIC_MODULE_DIR)
-        add_subdirectory(${ZEPHYR_CIRRUS_LOGIC_MODULE_DIR} cirrus_logic_bin_dir)
-    else()
-        message(FATAL_ERROR "Cirrus Logic/sdk-mcu-drivers repository not found\n"
-            "Path: ${ZEPHYR_CIRRUS_LOGIC_MODULE_DIR}/CMakeLists.txt\n"
-            "Run 'west config manifest.group-filter +nrf5340_audio' "
-            "and then 'west update'.\n")
     endif()
 endif()
