@@ -3,13 +3,11 @@
 #include <zephyr/kernel.h>
 #include "tick_provider.h"
 
-#define MAX_ACTIVE_NOTES 5
-
 static int _tick_count = 0;
 
 static struct keys _keys;
 
-static int _notes[MAX_ACTIVE_NOTES] = {0};
+static int _notes[CONFIG_MAX_NOTES] = {0};
 static int _notes_active_length = 0;
 
 static int _arp_current_note = 0;
@@ -41,7 +39,7 @@ void arpeggio_init(key_play_cb play_cb, key_stop_cb stop_cb) {
 void arpeggio_note_add(int note) {
     k_mutex_lock(&_mutex, K_FOREVER);
 
-    if (_notes_active_length == MAX_ACTIVE_NOTES) {
+    if (_notes_active_length == CONFIG_MAX_NOTES) {
         _remove_first_note();
         _notes_active_length--;
     }
@@ -62,7 +60,7 @@ void arpeggio_note_add(int note) {
 void arpeggio_note_remove(int note) {
     k_mutex_lock(&_mutex, K_FOREVER);
 
-    for (int i = 0; i < MAX_ACTIVE_NOTES; i++) {
+    for (int i = 0; i < CONFIG_MAX_NOTES; i++) {
         if (_notes[i] == note) {
             _remove_note(i);
             _notes_active_length--;
@@ -139,12 +137,12 @@ void arpeggio_set_divider(uint32_t divider) {
 }
 
 static void _remove_note(uint32_t index) {
-    __ASSERT(index < MAX_ACTIVE_NOTES, "index out of range");
+    __ASSERT(index < CONFIG_MAX_NOTES, "index out of range");
 
-    for (int i = index + 1; i < MAX_ACTIVE_NOTES; i++) {
+    for (int i = index + 1; i < CONFIG_MAX_NOTES; i++) {
         _notes[i-1] =  _notes[i];
     }
-    _notes[MAX_ACTIVE_NOTES-1] = 0;
+    _notes[CONFIG_MAX_NOTES-1] = 0;
 }
 
 static void _remove_first_note(void) {

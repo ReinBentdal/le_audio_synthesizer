@@ -106,7 +106,7 @@ static void _audio_process_work_submit(struct k_timer * _unused) {
 static void _audio_process(struct k_work * _unused) {
 	if (_sw_codec_config.encoder.enabled) {
 		
-		fixed16 _audio_buf[AUDIO_BLOCK_SIZE];
+		static fixed16 _audio_buf[AUDIO_BLOCK_SIZE];
 		memset(_audio_buf, 0, AUDIO_BLOCK_SIZE * sizeof _audio_buf[0]);
 
 		/* audio proccessing here */
@@ -122,7 +122,7 @@ static void _audio_process(struct k_work * _unused) {
 		/* Send encoded data over IPM */
 		stream_control_encoded_data_send(encoded_data, encoded_data_size);
 
-		/* increment audio time */
+		/* increment audio time. This might take time, because it also might call callbacks. Thus done after the block of audio is processed */
 		tick_provider_increment();
 	}
 }
