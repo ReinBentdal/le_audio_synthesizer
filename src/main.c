@@ -14,6 +14,7 @@
 #endif
 
 #include "audio_process.h"
+#include "audio_sync_timer.h"
 #include "ble_connection.h"
 #include "button.h"
 #include "macros_common.h"
