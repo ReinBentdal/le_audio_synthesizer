@@ -3,7 +3,7 @@ The new le audio specification brings improvements to Bluetooth audio. Lower lat
 
 This demo application demonstrates a simple polyphonic synthesizer. The buttons on the device functions as a simple piano keyboard. The synthesized audio is send through le audio to a nRF5340 Audio DK, which functions as the receiving part such as an headset.
 
-![device setup](./assets/devices.PNG)
+![device setup](./assets/devices.png)
 
 ## Table of contents
 1. [Useful resources](#useful-resources)
