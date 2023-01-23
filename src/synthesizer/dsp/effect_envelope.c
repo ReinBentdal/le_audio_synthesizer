@@ -1,7 +1,8 @@
 #include "effect_envelope.h"
 
+#include <math.h>
+
 #include <zephyr/kernel.h>
-#include <arm_math.h>
 
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(dsp, CONFIG_LOG_DSP_LEVEL);
@@ -255,7 +256,7 @@ static int16_t _calculate_envelope_magnitude(struct effect_envelope *this, float
         const float l = this->floor_level;
         const float d = this->duty_cycle;
         const float c = this->rising_curve;
-        return INT16_MAX * (l + (1 - powf(c, position / d)) * (1 - l) / (1 - c));
+        return INT16_MAX * (l + (1 - pow(c, position / d)) * (1 - l) / (1 - c));
     }
 
     /* falling envelope curve */
@@ -269,7 +270,7 @@ static int16_t _calculate_envelope_magnitude(struct effect_envelope *this, float
         const float l = this->floor_level;
         const float d = this->duty_cycle;
         const float c = this->falling_curve;
-        return INT16_MAX * (l + (powf(c, (position - d) / (1 - d)) - c) * (1 - l) / (1 - c));
+        return INT16_MAX * (l + (pow(c, (position - d) / (1 - d)) - c) * (1 - l) / (1 - c));
     }
 }
 

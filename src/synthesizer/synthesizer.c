@@ -1,7 +1,6 @@
 #include "synthesizer.h"
 
 #include <zephyr/kernel.h>
-#include <arm_math.h>
 
 #include "dsp_instructions.h"
 #include "midi_note_to_frequency.h"
@@ -103,7 +102,7 @@ bool synthesizer_process(fixed16* block, size_t block_size)
 
         fixed16 osc_block[block_size];
         
-        ret = osc_process_sinecrush(&_osciillators[i], osc_block, block_size);
+        ret = osc_process_triangle(&_osciillators[i], osc_block, block_size);
         if (ret == false) continue;
 
         // ret = effect_modulation_process(&_modulation[i], block, block_size);
