@@ -67,7 +67,7 @@ The application is developed using `nrf-sdk v2.0.2`. `common_net.hex` is borrowe
 It is recomended to build and program the synth application through VS Code with the nrf Connect extension. Select the board you want to build for. Add `overlay-debug.conf` to your kconfig build configuration.
 
 <p align="center">
-  <img src="./assets/nrf_connect_tab.PNG" /> <img src="./assets/build_configuration.PNG" />
+  <img height="400px" src="./assets/nrf_connect_tab.PNG" /> <img height="400px" src="./assets/build_configuration.PNG" />
 </p>
 
 
