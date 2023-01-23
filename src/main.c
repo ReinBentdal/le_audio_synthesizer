@@ -15,7 +15,6 @@
 
 #include "audio_process.h"
 #include "ble_connection.h"
-#include "ble_discovered.h"
 #include "button.h"
 #include "macros_common.h"
 #include "stream_control.h"
@@ -52,9 +51,6 @@ void main(void)
 
   ret = led_init();
   ERR_CHK_MSG(ret, "failed to initialize leds");
-
-  LOG_DBG("ble discovered init");
-  ble_discovered_init();
 
   LOG_DBG("bluetooth start");
   ret = bluetooth_init(_on_bt_ready);
