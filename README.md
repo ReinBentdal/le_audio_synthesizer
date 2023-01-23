@@ -1,16 +1,24 @@
 # Synthesize and transmit audio through ble le audio with nrf5340
-The new le audio specification brings improvements to Bluetooth audio. Lower latency and better percieved audio quality may make digital music instruments, utilizing bluetooth audio, more appealing as commercial products. 
+The new le audio specification brings improvements to Bluetooth audio. Lower latency and better perceived audio quality may make digital music instruments, utilizing Bluetooth audio, more appealing as commercial products. 
 
-This demo application demonstrates a simple polyphonic synthesizer using the nRF5340 Audio DK. The buttons on the device functions as a simple piano keyboard. The synthesized audio is sendt through le audio to a recieving nRF5340 Audio DK, which functions as the recieving part such as an headset.
+This demo application demonstrates a simple polyphonic synthesizer. The buttons on the device functions as a simple piano keyboard. The synthesized audio is send through le audio to a nRF5340 Audio DK, which functions as the receiving part such as an headset.
+
+![device setup](./assets/devices.PNG)
 
 ## Table of contents
-1. [System design](#system-design)
-2. [Signal processing](#signal-processing)
-3. [Programming and testing](#programming-and-testing)
+1. [Useful resources](#useful-resources)
+2. [System design](#system-design)
+3. [Signal processing](#signal-processing)
+4. [Programming and testing](#programming-and-testing)
+
+## Useful resources
+
+[Teensy audio library for embedded]([PaulStoffregen/Audio: Teensy Audio Library (github.com)](https://github.com/PaulStoffregen/Audio))
+[nRF5340 audio application]([sdk-nrf/applications/nrf5340_audio at main · nrfconnect/sdk-nrf (github.com)]([nRF5340 Audio — nRF Connect SDK 2.2.99 documentation (nordicsemi.com)](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html))
 
 ## System design
-The application is based on the nordic [nrf5340_audio](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html) demo application, but stripped down and specialized for a synthesizer use 
-case. 
+
+The application is based on the nordic [nrf5340_audio](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html) demo application, but stripped down and specialized for a synthesizer usecase. 
 
 The diagram below illustrates the general synthesizer flow.
 
@@ -43,9 +51,13 @@ Programming left headset board, snr is inferred if only one device is connected.
 #### Building and programming youself
 The application is developed using `nrf-sdk v2.0.2`. `common_net.hex` is borrowed from the `nrf5340_audio` application provided with this version of nrf-sdk, located in `bin/ble5-ctr-rpmsg_3251.hex`. The headsets has to be programmed with this audio application version to function correctly. The provided headset binaries are build from the stock `nrf5340_audio` application with added configs `CONFIG_AUDIO_HEADSET_CHANNEL_COMPILE_TIME=y` and `CONFIG_AUDIO_HEADSET_CHANNEL=x`, where x=0 => left headset, x=1 => right headset.
 
-It is recomended to build and program the synth application through VS Code with the nrf Connect extension. Select the board you want to build for. Add `overlay-debug.conf` to your kconfig build configuration.\
+It is recomended to build and program the synth application through VS Code with the nrf Connect extension. Select the board you want to build for. Add `overlay-debug.conf` to your kconfig build configuration.
+
 ![Image](./assets/nrf_connect_tab.PNG)
+
 ![Image](./assets/build_configuration.PNG)
+
+*TODO: LC3 no longer closed source?*
 
 The application uses the LC3 codec (closed source). Make sure to include it through west:
 
