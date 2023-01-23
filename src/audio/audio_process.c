@@ -39,6 +39,7 @@ void audio_process_init(void) {
 	tick_provider_subscribe(&_syntheiziser_tick_provider, synthesizer_tick);
 
 	/* audio blocks processed through a queue */
+	// TODO: since the interval is the same as ble connection interval should it instead be directly syncronized with this interval. For example by radio notify interrupt.
 	k_work_queue_init(&_encoder_work_queue);
 	k_work_queue_start(&_encoder_work_queue, _encoder_stack_area, K_THREAD_STACK_SIZEOF(_encoder_stack_area), K_PRIO_PREEMPT(CONFIG_ENCODER_THREAD_PRIO), NULL);
 }
