@@ -1,7 +1,7 @@
 /**
  * @file tick_provider.h
  * @author Rein Gundersen Bentdal
- * @brief Gives audio based time syncronization
+ * @brief Gives audio based time syncronization. Time is incremented by sending ticks to subscribers.
  * @version 0.1
  * @date 2023-01-11
  * 

@@ -16,7 +16,7 @@
 
 #include "dsp_instructions.h"
 
-// assumes we are mainly interrested in 16-bit dsp with fixed16 point range of [-1, 1] and [0, 1]
+// assumes we are mainly interrested in 16-bit dsp with fixed16 point range of [-1, 1] and [0, 1] respectively
 typedef int16_t fixed16;
 typedef uint16_t ufixed16;
 
