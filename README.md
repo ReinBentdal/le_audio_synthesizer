@@ -5,7 +5,7 @@ This demo application demonstrates a simple polyphonic synthesizer using the nRF
 
 ## Table of contents
 1. [System design](#system-design)
-2. [Signal processing](#signal-procesing)
+2. [Signal processing](#signal-processing)
 3. [Programming and testing](#programming-and-testing)
 
 ## System design
@@ -16,7 +16,13 @@ The diagram below illustrates the general synthesizer flow.
 
 ![flowchart](assets/synth_flowchart.png)
 
-## Signal procesing
+The synthesizer is highly modular which makes it easy to include or exclude modules. The provided setup is constructed to demonstrate different aspects of a synthesizer, such as polyphonic oscillators, effects and audio-synced time-dependency.
+
+## Signal processing
+
+Audio is processed in blocks of `N` samples, initiated in `audio_process.c`. A timer ensures new blocks are processed in an interval to match audio sample rate. Audio processing latency is thus equal to the timer interval. 
+
+
 
 ## Programming and testing
 *Minimum hardware requirements:*
@@ -51,3 +57,7 @@ The application should now be ready to build through the build action in the nrf
 
 ### Testing
 Turn on both the synthesizer board as well as 1 or 2 headset boards. If `LED1`(blue) lights up on the headset board, there is a connection. By pressing the `Play/Pause` button on the headset board, audio output is enabled. Connect speaker to the headphone aux connection on the headset. Pressing `Button 1` to `Button 4` on the synthesizer board should now result in audio from the speaker.
+
+Image below illustrates a possible setup with nRF5340 dk as synth.
+
+![test setup](./assets/test_setup.jpg)
