@@ -15,8 +15,8 @@ This demo application demonstrates a simple polyphonic synthesizer. The buttons 
 
 ## Useful resources
 
-[Teensy audio library for embedded]([PaulStoffregen/Audio: Teensy Audio Library (github.com)](https://github.com/PaulStoffregen/Audio))
-[nRF5340 audio application]([sdk-nrf/applications/nrf5340_audio at main · nrfconnect/sdk-nrf (github.com)]([nRF5340 Audio — nRF Connect SDK 2.2.99 documentation (nordicsemi.com)](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html))
+- [Teensy audio library for embedded](https://github.com/PaulStoffregen/Audio)
+- [nRF5340 audio application](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html)
 
 ## System design
 
