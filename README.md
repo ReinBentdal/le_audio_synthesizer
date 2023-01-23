@@ -3,7 +3,9 @@ The new le audio specification brings improvements to Bluetooth audio. Lower lat
 
 This demo application demonstrates a simple polyphonic synthesizer. The buttons on the device functions as a simple piano keyboard. The synthesized audio is send through le audio to a nRF5340 Audio DK, which functions as the receiving part such as an headset.
 
-![device setup](./assets/devices.png)
+<p align="center">
+  <img src="./assets/devices.png" />
+</p>
 
 ## Table of contents
 1. [Useful resources](#useful-resources)
@@ -22,7 +24,9 @@ The application is based on the nordic [nrf5340_audio](https://developer.nordics
 
 The diagram below illustrates the general synthesizer flow.
 
-![flowchart](assets/synth_flowchart.png)
+<p align="center">
+  <img src="./assets/synth_flowchart.png" />
+</p>
 
 The synthesizer is highly modular which makes it easy to include or exclude modules. The provided setup is constructed to demonstrate different aspects of a synthesizer, such as polyphonic oscillators, effects and audio-synced time-dependency.
 
@@ -53,9 +57,11 @@ The application is developed using `nrf-sdk v2.0.2`. `common_net.hex` is borrowe
 
 It is recomended to build and program the synth application through VS Code with the nrf Connect extension. Select the board you want to build for. Add `overlay-debug.conf` to your kconfig build configuration.
 
-![Image](./assets/nrf_connect_tab.PNG)
+<p align="center">
+  <img src="./assets/nrf_connect_tab.PNG" /> <img src="./assets/build_configuration.PNG" />
+</p>
 
-![Image](./assets/build_configuration.PNG)
+
 
 *TODO: LC3 no longer closed source?*
 
@@ -72,4 +78,6 @@ Turn on both the synthesizer board as well as 1 or 2 headset boards. If `LED1`(b
 
 Image below illustrates a possible setup with nRF5340 dk as synth.
 
-![test setup](./assets/test_setup.jpg)
+<p align="center">
+  <img width="500px" src="./assets/test_setup.jpg" />
+</p>
