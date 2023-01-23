@@ -1,16 +1,16 @@
-<mxfile host="app.diagrams.net" modified="2023-01-23T13:25:08.334Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.55" version="20.8.3" etag="VcdC45NpqeSzvJ6-gBEs" type="github">
+<mxfile host="app.diagrams.net" modified="2023-01-23T14:23:53.626Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.55" version="20.8.3" etag="d4JdcZAV6Z1yhzHCsigm" type="github">
   <diagram id="SZc83_MyZ55cI5UaisjV" name="Page-1">
-    <mxGraphModel dx="758" dy="553" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="902" dy="553" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="zaWjKZagfPh_9oE9kp7t-2" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Synthesizer&lt;/font&gt;&lt;/b&gt;&lt;br&gt;nRF5340 dk or nRF5340 audio dk" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+        <mxCell id="zaWjKZagfPh_9oE9kp7t-2" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Synthesizer&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;nRF5340 DK&lt;/i&gt; or &lt;i&gt;nRF5340 audio DK&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#EEEEEE;" vertex="1" parent="1">
           <mxGeometry x="320" y="180" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="zaWjKZagfPh_9oE9kp7t-3" value="&lt;b&gt;Headset right&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;nRF5340 audio dk&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;" vertex="1" parent="1">
+        <mxCell id="zaWjKZagfPh_9oE9kp7t-3" value="&lt;b&gt;Headset right&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;i&gt;nRF5340 audio DK&lt;/i&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;" vertex="1" parent="1">
           <mxGeometry x="400" y="80" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="zaWjKZagfPh_9oE9kp7t-4" value="&lt;b&gt;Headset left&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;nRF5340 audio dk&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;" vertex="1" parent="1">
+        <mxCell id="zaWjKZagfPh_9oE9kp7t-4" value="&lt;b&gt;Headset left&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;i&gt;nRF5340 audio DK&lt;/i&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=14;" vertex="1" parent="1">
           <mxGeometry x="240" y="80" width="120" height="40" as="geometry" />
         </mxCell>
         <mxCell id="zaWjKZagfPh_9oE9kp7t-5" value="" style="endArrow=classic;html=1;rounded=0;fontSize=12;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;" edge="1" parent="1" target="zaWjKZagfPh_9oE9kp7t-4">
