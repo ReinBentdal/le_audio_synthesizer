@@ -1,3 +1,4 @@
+# C array of mapping between note and frequencu
 
 N = 128
 
