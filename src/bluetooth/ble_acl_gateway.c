@@ -8,7 +8,6 @@
 #include "ble_acl_common.h"
 #include "ble_audio_services.h"
 #include "macros_common.h"
-#include "ble_discovered.h"
 #include "led.h"
 
 #include <zephyr/kernel.h>
@@ -137,8 +136,6 @@ static int _device_found(uint8_t type, const uint8_t *data, uint8_t data_len,
 	if (ble_acl_gateway_all_links_connected()) {
 		return 0;
 	}
-
-	ble_discovered_add(addr, data, data_len, rssi);
 
 	char addr_str[BT_ADDR_LE_STR_LEN];
 	bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));

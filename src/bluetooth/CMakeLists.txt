@@ -11,5 +11,4 @@ target_sources(app PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/ble_connection.c
 	${CMAKE_CURRENT_SOURCE_DIR}/ble_hci_vsc.c
 	${CMAKE_CURRENT_SOURCE_DIR}/ble_transmit.c
-	${CMAKE_CURRENT_SOURCE_DIR}/ble_discovered.c
 )

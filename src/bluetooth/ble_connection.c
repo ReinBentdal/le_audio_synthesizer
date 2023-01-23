@@ -51,7 +51,6 @@ int bluetooth_init(bluetooth_ready_t on_bt_ready) {
 	k_timer_start(&_net_core_watchdog_timer, K_NO_WAIT, K_MSEC(NET_CORE_WATCHDOG_TIME_MS));
 
 	return 0;
-
 }
 
 static void _on_bt_enabled(int err) {
