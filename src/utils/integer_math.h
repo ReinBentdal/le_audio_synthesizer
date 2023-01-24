@@ -14,6 +14,8 @@
 
 #include <stdint.h>
 
+#include <math.h>
+
 #include "dsp_instructions.h"
 
 // assumes we are mainly interrested in 16-bit dsp with fixed16 point range of [-1, 1] and [0, 1] respectively
@@ -23,13 +25,13 @@ typedef uint16_t ufixed16;
 // returns the equivalent integer value from the float range -1 to 1
 static inline fixed16 FLOAT_TO_FIXED16(float val) __attribute__((always_inline, unused));
 static inline fixed16 FLOAT_TO_FIXED16(float val) {
-    return (fixed16)(val*INT16_MAX);
+    return (fixed16)roundf(val*INT16_MAX);
 }
 
 // returns the equivalent integer value from the float range -1 to 1
-static inline fixed16 FLOAT_TO_UFIXED16(float val) __attribute__((always_inline, unused));
-static inline fixed16 FLOAT_TO_UFIXED16(float val) {
-    return (fixed16)(val*UINT16_MAX);
+static inline ufixed16 FLOAT_TO_UFIXED16(float val) __attribute__((always_inline, unused));
+static inline ufixed16 FLOAT_TO_UFIXED16(float val) {
+    return (ufixed16)roundf(val*UINT16_MAX);
 }
 
 static inline float FIXED16_TO_FLOAT(fixed16 val) __attribute__((always_inline, unused)); 
