@@ -1,4 +1,4 @@
-Files in this repository is licensed by license stated below if not otherwise specified
+Files in this repository is licensed by the license stated below if not otherwise specified
 
                                  Apache License
                            Version 2.0, January 2004
