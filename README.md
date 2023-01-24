@@ -81,7 +81,7 @@ It is recomended to build and program the synth application through VS Code with
 
 The application uses the LC3 codec which is included with `sdk-nrfxlib`. Make sure its up to date (inside west workspace by *nRF Connect: Create Shell Terminal* in VS Code *Command Palette*):
 
-`west update`
+> west update
 
 The application should now be ready to build through the *Build* action in the `nRF Connect for VS Code` extension.
 
