@@ -32,6 +32,25 @@ Audio is processed in blocks of `N` samples, initiated in `audio_process`. A tim
 
 Using a bit depth of 16-bit. The DSP is mainly done using integers in a fixed point format. Thus a type `fixed16` is defined with associated manipulations in `interger_math`. Since the applications is specifically targeted towards the nRF5340, the applications uses included DSP instructions in the SoC in some cases, abstracted by `dsp_instruction`.
 
+The block of code below is an example of the use of `fixed16` to generate a sinewave with a frequency determined by `phase_increment`. The upper 8 bits of `phase_accumulate` is used to select which stored samples to use, while the `phase_increment[8:23]` is used to determine the interpolation value between these two samples. Then there is an applied magnitude to the signal.
+
+```c
+  for (uint32_t i = 0; i < block_size; i++) {
+    /* upper 8 bit as 256-value sample index */
+    uint32_t wave_index = osc->phase_accumulate >> 24;
+
+    /* interpolate between the two samples for better audio quality */
+    uint32_t interpolate_pos = (osc->phase_accumulate >> 8) & UINT16_MAX;
+
+    block[i] = FIXED_INTERPOLATE_AND_SCALE(sinus_samples[wave_index], sinus_samples[wave_index + 1], interpolate_pos, osc->magnitude);
+
+    /* increment waveform phase */
+    osc->phase_accumulate += osc->phase_increment;
+  }
+```
+
+`FIXED_INTERPOLATE_AND_SCALE` is provided in `integer_math` to efficiently perform this calculation using DSP instructions on the CPU.
+
 With the current application configuration, about 80% of the *nRF5340* app core is used when all oscillators are active. Around 40% of the app core is used when two headphone devices are connected. A large chunk of this is probably the LC3 encoder.
 
 ### Latency
