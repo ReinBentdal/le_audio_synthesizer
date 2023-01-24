@@ -1,10 +1,12 @@
 /**
  * @file effect_envelope.h
  * @author Rein Gundersen Bentdal
+ * @brief Allpass filter with phase shift (delay) audio effect
  * @date 2023-01-17
  * 
- * @copyright Copyright (c) 2022
- * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _FILTER_ALLPASS_H_

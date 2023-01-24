@@ -5,8 +5,9 @@
  * @version 0.1
  * @date 2023-01-11
  * 
- * @copyright Copyright (c) 2023
- * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _KEY_ASSIGN_H_

@@ -1,5 +1,4 @@
-/* Modified dsp instruction functions ported to Nordic by Rein Gundersen Bentdal
- */
+/* Modified dsp instruction functions ported to Nordic by Rein Gundersen Bentdal */
 
 /* Copyright (c) 2014, Paul Stoffregen, paul@pjrc.com
  *

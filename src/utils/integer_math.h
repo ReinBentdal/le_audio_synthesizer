@@ -1,12 +1,12 @@
 /**
  * @file integer_math.h
  * @author Rein Gundersen Bentdal
- * @brief inline functions to make integer dsp easier
- * @version 0.1
+ * @brief inline functions to make integer fixed point dsp easier
  * @date 2023-01-17
  * 
- * @copyright Copyright (c) 2023
- * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _INTEGER_MATH_H_

@@ -6,8 +6,10 @@ This demo application demonstrates a simple polyphonic synthesizer using *nRF534
 <p align="center">
   <img src="./assets/devices.png" />
 </p>
+*Application is developed using nrf-sdk v2.0.2*
 
 ## Table of contents
+
 1. [Useful resources](#useful-resources)
 2. [System design](#system-design)
 3. [Signal processing](#signal-processing)
@@ -85,7 +87,7 @@ The application uses the LC3 codec (closed source). Make sure to include it thro
 The application should now be ready to build through the build action in the nrf connect vs code extension.
 
 ### Testing
-Turn on both the synthesizer board as well as 1 or 2 headset boards. If `LED1`(blue) lights up on the headset board, there is a connection. By pressing the `Play/Pause` button on the headset board, audio output is enabled. Connect speaker to the headphone aux connection on the headset. Pressing `Button 1` to `Button 4` on the synthesizer board should now result in audio from the speaker.
+Turn on both the synthesizer board as well as 1 or 2 headset boards. If `LED1`(blue) lights up on the headset board, there is a connection. By pressing the `PLAY/PAUSE` button on the headset board, audio output is enabled. Connect speaker to the headphone aux connection on the headset. Pressing `Button 1` to `Button 4` on the synthesizer board should now result in audio from the speaker.
 
 Image below illustrates a possible setup with *nRF5340 DK* as synth.
 
@@ -96,7 +98,7 @@ Image below illustrates a possible setup with *nRF5340 DK* as synth.
 
 - remove `SBC` codec from application => remove `CONFIG_SW_CODEC_SBC` and `CONFIG_SW_CODEC_LC3`
 - simplify and combine `ble_ack` files and `ble_connection`
-- stereo audio
+- stereo processing
 - remove `CONFIG_AUDIO_BIT_DEPTH_OCTETS` since application only supports 16-bit processing anyway
 - synchronize audio processing with Bluetooth transmission
 - update to latest nrf-sdk version and latest le audio net core, currently supports v2.0.2

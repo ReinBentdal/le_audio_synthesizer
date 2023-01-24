@@ -1,3 +1,14 @@
+/**
+ * @file effect_echo.h
+ * @author Rein Gundersen Bentdal
+ * @brief Audio echo/delay effect
+ * @date 2023-01-24
+ * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef _EFFECT_ECHO_H_
 #define _EFFECT_ECHO_H_
 

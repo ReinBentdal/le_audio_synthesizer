@@ -1,10 +1,12 @@
 /**
  * @file effect_envelope.h
  * @author Rein Gundersen Bentdal
+ * @brief Audio amplitude modulation effect
  * @date 2022-09-01
  * 
- * @copyright Copyright (c) 2022
- * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #pragma once

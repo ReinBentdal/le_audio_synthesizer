@@ -1,11 +1,13 @@
 /**
  * @file led.h
  * @author Rein Gundersen Bentdal
- * @brief Interface for controlling board leds
+ * @brief Simple interface for controlling board leds
  * @date 2023-01-19
+ *
  * 
- * @copyright Copyright (c) 2023
- * 
+ * Copyright (c) 2021-2022 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _LED_H_

@@ -1,3 +1,15 @@
+/**
+ * @file arpeggio.h
+ * @author Rein Gundersen Bentdal
+ * @brief Audio arpeggiator note effect
+ * @version 0.1
+ * @date 2023-01-24
+ * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #ifndef _ARPEGGIO_H_
 #define _ARPEGGIO_H_
 

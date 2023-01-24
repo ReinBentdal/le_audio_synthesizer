@@ -1,4 +1,13 @@
-
+/**
+ * @file midi_note_to_frequency.h
+ * @author Rein Gundersen Bentdal
+ * @brief Map between MIDI note value and coresponding frequency
+ * @date 2023-01-24
+ * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 #include <stdint.h>
 

@@ -6,7 +6,9 @@
  *  sometimes result in the preemtive value being wrong.
  * @date 2022-08-18
  * 
- * @copyright Copyright (c) 2022
+ * Copyright (c) 2021-2022 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _BUTTON_H_

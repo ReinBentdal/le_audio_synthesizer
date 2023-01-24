@@ -1,3 +1,16 @@
+/**
+ * @file audio_process.h
+ * @author Rein Gundersen Bentdal
+ * @brief Entrypoint for audio processing
+ * @version 0.1
+ * @date 2023-01-24
+ * 
+ * Copyright (c) 2021-2022 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * 
+ */
+
 #ifndef _AUDIO_PROCESS_H_
 #define _AUDIO_PROCESS_H_
 

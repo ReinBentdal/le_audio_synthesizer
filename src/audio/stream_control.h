@@ -1,6 +1,12 @@
 #ifndef _STREAM_CONTROL_H_
 #define _STREAM_CONTROL_H_
 
+/*
+ * Copyright (c) 2018 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
 #include <stddef.h>
 #include "ble_transmit.h"
 

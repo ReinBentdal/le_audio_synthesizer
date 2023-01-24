@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2018 Nordic Semiconductor ASA
+ * Copyright (c) 2023 Nordic Semiconductor ASA
  *
- * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
- */
+ * SPDX-License-Identifier: Apache-2.0
+*/
 
 #include <string.h>
 #include <zephyr/device.h>
@@ -44,7 +44,6 @@ void main(void)
 #ifdef CONFIG_CPU_LOAD
   cpu_load_init();
 #endif
-
 
   LOG_DBG("hf clock start");
   ret = _hfclock_config_and_start();

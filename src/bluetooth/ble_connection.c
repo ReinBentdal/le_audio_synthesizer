@@ -20,6 +20,7 @@ static struct k_work _net_core_ctrl_version_get_work;
 
 static void _setup_random_static_address(void);
 static void _on_bt_enabled(int err);
+
 static void _net_core_timeout_handler(struct k_timer *timer_id);
 static void _net_core_watchdog_handler(struct k_timer *timer_id);
 static void _work_net_core_ctrl_version_get(struct k_work *work);

@@ -3,8 +3,9 @@
  * @author Rein Gundersen Bentdal
  * @date 2022-09-01
  * 
- * @copyright Copyright (c) 2022
- * 
+ * Copyright (c) 2023 Nordic Semiconductor ASA
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #ifndef _EFFECT_ENVELOPE_H
