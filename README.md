@@ -1,7 +1,7 @@
 # Synthesize and transmit audio through ble le audio with nrf5340
 The new le audio specification brings improvements to Bluetooth audio. Lower latency and better perceived audio quality may make digital music instruments, utilizing Bluetooth audio, more appealing as commercial products. 
 
-This demo application demonstrates a simple polyphonic synthesizer. The buttons on the device functions as a simple piano keyboard. The synthesized audio is send through le audio to a *nRF5340 Audio DK*, which functions as the receiving part such as an headset.
+This demo application demonstrates a simple polyphonic synthesizer using *nRF5340 DK* or *nRF5340 Audio DK*. Synthesized audio is transmitted with le audio to receiving *nRF5340 Audio DK*s, which functions as the headset.
 
 <p align="center">
   <img src="./assets/devices.png" />
@@ -22,16 +22,16 @@ This demo application demonstrates a simple polyphonic synthesizer. The buttons 
 
 The application is based on the Nordic [nrf5340_audio](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/applications/nrf5340_audio/README.html) demo application, but stripped down and specialized for a synthesizer use case. 
 
-The diagram below illustrates the general synthesizer flow.
+The diagram below illustrates the general audio synthesis flow.
 
 <p align="center">
   <img src="./assets/synth_flowchart.png" />
 </p>
 The synthesizer is highly modular which makes it easy to include or exclude modules. The provided setup is constructed to demonstrate different aspects of a synthesizer, such as polyphonic oscillators, effects and audio-synced time-dependency.
 
-Which notes to play or stop is sent into the synthesizer module. These notes may be transformed to create a sequencer, or in this case an arpeggiator. The arpeggiator is time-dependent, and thus needs a source of time. We must use a source of time which is synchronized with the sense of time in the processed audio. This is the function of `tick_provider`, which increments time for each audio block processed. The tick provider sends ticks to subscribing modules. This is the same method MIDI uses to synchronize different audio sources.
+The synthesizer module receives information on which notes to play and to stop playing. These notes may be transformed to create a sequencer, or in this case an arpeggiator. The arpeggiator is time-dependent, and thus needs a source of time. We must use a source of time which is synchronized with the sense of time in the processed audio. This is the function of `tick_provider`, which increments time for each audio block processed. The tick provider sends ticks to subscribing modules. This is the same method MIDI uses to synchronize different audio sources, which makes it possible to implement MIDI synchronization. 
 
-For polyphonic synthesis we need multiple oscillators, equal to the number of notes it should be possible to play at once. `key_assign` keeps track of currently active oscillators and assigns note to oscillator in a *first-inactive* manner. If there are no inactive oscillators it will assign the new note to the *first-active* oscillator. The application is by default configured to have 5 oscillators. Even when playing an arpeggiator with more than 5 notes, it is hard to notice the last-inactive note cutting off.
+For polyphonic synthesis we need multiple oscillators, equal to the number of notes it should be possible to play at once. `key_assign` keeps track of currently active oscillators and assigns notes to oscillators in a *first-inactive* (the oscillator which has been inactive for the longest time) manner. If there are no inactive oscillators, it will assign the new note to the *first-active* (the oscillator which has been active for the longest time) oscillator. The application is by default configured to have 5 oscillators. Even when playing an arpeggiator with more than 5 notes, it is hard to notice the last-inactive note cutting off.
 
 The application is configured to encode mono audio, in `audio_process_start`. All modules are also constructed as mono.  It isn't too hard to modify the application to instead process stereo audio. The echo effect, for example, may by converted to a stereo ping-pong delay effect. Before the echo effect, split the mono sound into left and right channel. Then input these channels to the echo effect. Make sure to set the `pcm_size` correctly in `sw_codec_encode` for stereo encoding.
 
@@ -52,8 +52,10 @@ Audio is processed in blocks of `N` samples, initiated in `audio_process.c`. A t
 or
 - 2 *nRF5340 audio DK*
 
+It is recommended to use 2 *nRF5340 audio DK*s together with 1 *nRF5340 DK*.
+
 ### Programming
-There is provided prebuilt binaries which works out of the box. It is recomended to program these binaries with the included `program.py` script. Run `python program.py -h` to see available options. It is recomended to verify that you are able to get the prebuilt binaries to work before building and programming from source yourself. You should program both the synthesizer board as well as the headset boards. Example of using `program.py`:
+There is provided prebuilt binaries which works out of the box. It is recommended to program these binaries with the included `program.py` script. Run `python program.py -h` to see available options. It is recommended to verify that you are able to get the prebuilt binaries to work before building and programming from source yourself. You should program both the synthesizer board as well as the headset boards. Example of using `program.py`:
 
 Programming synthesizer board
 > python program.py --snr 1234567890 --device synth --board nrf5340_dk
@@ -90,3 +92,11 @@ Image below illustrates a possible setup with *nRF5340 DK* as synth.
 <p align="center">
   <img width="500px" src="./assets/test_setup.jpg" />
 </p>
+## Further improvements
+
+- remove `SBC` codec from application => remove `CONFIG_SW_CODEC_SBC` and `CONFIG_SW_CODEC_LC3`
+- simplify and combine `ble_ack` files and `ble_connection`
+- stereo audio
+- remove `CONFIG_AUDIO_BIT_DEPTH_OCTETS` since application only supports 16-bit processing anyway
+- synchronize audio processing with Bluetooth transmission
+- update to latest nrf-sdk version and latest le audio net core, currently supports v2.0.2
