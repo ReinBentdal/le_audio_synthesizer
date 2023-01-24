@@ -6,6 +6,7 @@ This demo application demonstrates a simple polyphonic synthesizer using *nRF534
 <p align="center">
   <img src="./assets/devices.png" />
 </p>
+
 *Application is developed using nrf-sdk v2.0.2*
 
 ## Table of contents
