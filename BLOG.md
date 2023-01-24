@@ -32,7 +32,7 @@ Audio is processed in blocks of `N` samples, initiated in `audio_process`. A tim
 
 Using a bit depth of 16-bit. The DSP is mainly done using integers in a fixed point format. Thus a type `fixed16` is defined with associated manipulations in `interger_math`. Since the applications is specifically targeted towards the nRF5340, the applications uses included DSP instructions in the SoC in some cases, abstracted by `dsp_instruction`.
 
-The block of code below (from `oscillator.c`) is an example of generating a sinewave with a frequency determined by `phase_increment`. The upper 8 bits of `phase_accumulate`, `phase_accumulate[24:31]`, is used to select which stored samples to use, while phase_increment[8:23]` is used to determine the interpolation value between these two samples. Then there is an applied magnitude to the signal.
+The block of code below (from `oscillator.c`) is an example of generating a sinewave with a frequency determined by `phase_increment`. The upper 8 bits of `phase_accumulate`, `phase_accumulate[24:31]`, is used to select which stored samples to use, while `phase_increment[8:23]` is used to determine the interpolation value between these two samples. Then there is an applied magnitude to the signal.
 
 ```c
   for (uint32_t i = 0; i < block_size; i++) {

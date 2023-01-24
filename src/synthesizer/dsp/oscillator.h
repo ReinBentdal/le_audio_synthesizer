@@ -36,7 +36,7 @@ struct oscillator
 void osc_init(struct oscillator* osc);
 
 bool osc_process_sine(struct oscillator* osc, fixed16* block, size_t block_size);
-bool osc_process_sinecrush(struct oscillator* osc, fixed16* block, size_t block_size);
+bool osc_process_sinecrush(struct oscillator* osc, fixed16* block, size_t block_size); // similar to sine, but with artifacts which introduces more harmonics
 bool osc_process_triangle(struct oscillator* osc, fixed16* block, size_t block_size);
 bool osc_process_sawtooth(struct oscillator* osc, fixed16* block, size_t block_size);
 

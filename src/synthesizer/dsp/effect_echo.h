@@ -12,7 +12,6 @@
 #ifndef _EFFECT_ECHO_H_
 #define _EFFECT_ECHO_H_
 
-#include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 
