@@ -94,6 +94,7 @@ Image below illustrates a possible setup with *nRF5340 DK* as synth.
 <p align="center">
   <img width="500px" src="./assets/test_setup.jpg" />
 </p>
+
 ## Further improvements
 
 - remove `SBC` codec from application => remove `CONFIG_SW_CODEC_SBC` and `CONFIG_SW_CODEC_LC3`
