@@ -1,4 +1,4 @@
-# Synthesize and transmit audio through ble le audio with nrf5340
+# Synthesize and transmit audio through BLE LE Audio with nRF5340
 The new le audio specification brings improvements to Bluetooth audio. Lower latency and better perceived audio quality may make digital music instruments, utilizing Bluetooth audio, more appealing as commercial products. 
 
 This demo application demonstrates a simple polyphonic synthesizer using *nRF5340 DK* or *nRF5340 Audio DK*. Synthesized audio is transmitted with le audio to receiving *nRF5340 Audio DK*s, which functions as the headset.
@@ -41,11 +41,11 @@ The application is configured to encode mono audio, in `audio_process_start`. Al
 
 ## Signal processing
 
-Audio is processed in blocks of `N` samples, initiated in `audio_process`. A timer ensures new blocks are processed in an interval to match audio sample rate. For further development, this should probably instead be directly synced together with the Bluetooth connection interval.
+Audio is processed in blocks of `N` samples, initiated in `audio_process`. A timer ensures new blocks are processed in an interval to match audio sample rate. For further development, this should probably instead be directly synced together with the Bluetooth connection interval. May use [mpsl_radio_notification]([API documentation — nrfxlib 2.2.99 documentation (nordicsemi.com)](https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrfxlib/mpsl/doc/api.html#c.mpsl_radio_notification_cfg_set)).
 
 Using a bit depth of 16-bit. The DSP is mainly done using integers in a fixed point format. Thus a type `fixed16` is defined with associated manipulations in `interger_math`. Since the applications is specifically targeted towards the nRF5340, the applications uses included DSP instructions in the SoC in some cases, abstracted by `dsp_instruction`.
 
-*TODO: briefly talk about modules construction*
+With the current application configuration, about 80% of the *nRF5340* app core is used when all oscillators are active. Around 40% of the app core is used when two headset devices are connected. A large chunk of this is probably the LC3 encoder.
 
 ### Latency
 
@@ -79,19 +79,14 @@ It is recomended to build and program the synth application through VS Code with
 </p>
 
 
-
-*TODO: LC3 no longer closed source?*
-
-The application uses the LC3 codec (closed source). Make sure to include it through west:
-
-`west config manifest.group-filter +nrf5340_audio`
+The application uses the LC3 codec which is included with `sdk-nrfxlib`. Make sure its up to date (inside west workspace by *nRF Connect: Create Shell Terminal* in VS Code *Command Palette*):
 
 `west update`
 
-The application should now be ready to build through the build action in the nrf connect vs code extension.
+The application should now be ready to build through the *Build* action in the `nRF Connect for VS Code` extension.
 
 ### Testing
-Turn on both the synthesizer board as well as 1 or 2 headset boards. If `LED1`(blue) lights up on the headset board, there is a connection. By pressing the `PLAY/PAUSE` button on the headset board, audio output is enabled. Connect speaker to the headphone aux connection on the headset. Pressing `Button 1` to `Button 4` on the synthesizer board should now result in audio from the speaker.
+Turn on both the synthesizer board as well as 1 or 2 headset boards. If `LED1`(blue) lights up on the headset board, there is a connection. By pressing the `PLAY/PAUSE` button on the headset board, audio output is enabled (the blue light should flash). Connect speaker to the headphone aux connection on the headset. Pressing `Button 1` to `Button 4` on the synthesizer board should now result in audio from headset boards.
 
 Image below illustrates a possible setup with *nRF5340 DK* as synth.
 
@@ -102,7 +97,7 @@ Image below illustrates a possible setup with *nRF5340 DK* as synth.
 
 ## Further improvements
 
-- remove `SBC` codec from application => remove `CONFIG_SW_CODEC_SBC` and `CONFIG_SW_CODEC_LC3`
+- remove `SBC` codec from application, since not used => remove `CONFIG_SW_CODEC_SBC` and `CONFIG_SW_CODEC_LC3`
 - simplify and combine `ble_ack` files and `ble_connection`
 - stereo processing
 - remove `CONFIG_AUDIO_BIT_DEPTH_OCTETS` since application only supports 16-bit processing anyway
