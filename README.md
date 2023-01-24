@@ -7,6 +7,7 @@ This demo application demonstrates a simple polyphonic synthesizer using *nRF534
   <img src="./assets/devices.png" />
 </p>
 
+
 *Application is developed using nrf-sdk v2.0.2*
 
 ## Table of contents
@@ -40,13 +41,15 @@ The application is configured to encode mono audio, in `audio_process_start`. Al
 
 ## Signal processing
 
-Audio is processed in blocks of `N` samples, initiated in `audio_process.c`. A timer ensures new blocks are processed in an interval to match audio sample rate. For further development, this should probably instead be directly synced together with the Bluetooth connection interval.
+Audio is processed in blocks of `N` samples, initiated in `audio_process`. A timer ensures new blocks are processed in an interval to match audio sample rate. For further development, this should probably instead be directly synced together with the Bluetooth connection interval.
+
+Using a bit depth of 16-bit. The DSP is mainly done using integers in a fixed point format. Thus a type `fixed16` is defined with associated manipulations in `interger_math`. Since the applications is specifically targeted towards the nRF5340, the applications uses included DSP instructions in the SoC in some cases, abstracted by `dsp_instruction`.
 
 *TODO: briefly talk about modules construction*
 
 ### Latency
 
-*TODO: button latency, audio processing latency, BLE latency*
+The minimum connection interval in Bluetooth Low Energy is 7.5ms. Audio processing is initiated every 7.5ms to match the connection interval. The processing should thus not result in added latency. The new LC3 codec in LE audio, which replaces the SBC codex, is supposed to have much less latency. But this has not been tested in this particular application. The input buttons is configured with a 50ms debounce time. However this does not contribute to latency. This is because the implementation is such that the button state is assumed to change state whenever a new interrupt is triggered. After the debounce time, this assumption is tested by reading the pin value. This will result in occasional wrong button states, but corrected again after the debounce time. This has not resulted in any audible artifacts from tests.
 
 ## Programming and testing
 *Minimum hardware requirements:*
@@ -95,6 +98,7 @@ Image below illustrates a possible setup with *nRF5340 DK* as synth.
 <p align="center">
   <img width="500px" src="./assets/test_setup.jpg" />
 </p>
+
 
 ## Further improvements
 
