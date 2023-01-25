@@ -83,6 +83,10 @@ The application uses the LC3 codec which is included with `sdk-nrfxlib`. Make su
 
 > west update
 
+May have to run the command below to include the LC3 codec library. Make sure to run *west update* again afterwars:
+
+> west config manifest.group-filter +nrf5340_audio
+
 The application should now be ready to build through the *Build* action in the `nRF Connect for VS Code` extension.
 
 ### Testing
