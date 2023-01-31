@@ -68,6 +68,6 @@ The resulting application has demonstrated a functioning system of transmitting 
 Although no quantitative analysis has been done to determine the total latency, I would say its not noticeable when playing the keyboard while listening to the resulting sound. The application has demonstrated moderate audio signal processing, which resulted in about 80% CPU usage in the app core of nRF5340. Thus more complex processing, which might be demanded in consumer synthesis devices, may be hard to pull off. That being said, I am sure there are a lot of new and exiting applications enabled by LE Audio on nRF5340.
 
 ## Programming
-For a complete quide, take a look at the projects readme file. Video below demonstrates programming and testing using 2 *nRF5340 audio DK*s:
+For a complete guide, take a look at the project readme file. Video below demonstrates programming and testing using 2 *nRF5340 audio DK*s:
 
 https://user-images.githubusercontent.com/21336626/215824485-24f4640e-703f-48d8-b7ce-7334d7098f3e.mp4
