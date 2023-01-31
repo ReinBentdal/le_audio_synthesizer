@@ -60,9 +60,9 @@ or
 
 It is recommended to use 2 *nRF5340 audio DK*s together with 1 *nRF5340 DK*.
 
-<p align="center">
-  <video src="./assets/programming_demo_small.mp4" />
-</p>
+Video below demonstrates programming and testing using 2 *nRF5340 audio DK*s:
+
+https://user-images.githubusercontent.com/21336626/215824485-24f4640e-703f-48d8-b7ce-7334d7098f3e.mp4
 
 ### Programming
 There is provided prebuilt binaries which works out of the box. It is recommended to program these binaries with the included `program.py` script. Run `python program.py -h` to see available options. It is recommended to verify that you are able to get the prebuilt binaries to work before building and programming from source yourself. You should program both the synthesizer board as well as the headphone boards. Example of using `program.py`:
